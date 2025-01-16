@@ -1,13 +1,38 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from 'react';
+
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface NavProps {}
 
 const Nav: React.FC<NavProps> = () => {
 
+	const [isActive, setIsActive] = useState(false);
+	const toggleDarkMode = () => {
+		setIsActive((prev) => !prev);
+	};
+
+	useEffect(() => {
+		if (isActive) {
+		document.body.classList.add('active-body');
+		} else {
+		document.body.classList.remove('active-body');
+		}
+	}, [isActive]);
+	
 	return (
-		<div className="flex p-6 justify-between items-center bg-white border-b border-[#D0D5DD] fixed top-0 right-0 w-[calc(100%-250px)]">
+		<div className="app-header flex md:p-6 p-4 justify-between items-center bg-white border-b border-[#D0D5DD] fixed top-0 right-0 lg:w-[calc(100%-250px)] z-20 w-full">
+		<button className="block lg:hidden"
+        onClick={toggleDarkMode}>
+			<Image
+				alt="icon"
+				src="/images/side-menu.svg"
+				height={20}
+				width={30}
+				sizes="100vw"
+				quality={100}
+			/>
+      </button>
 			<form className="relative max-w-[320px] w-full">
 				<span className="w-5 h-5 absolute top-1/2 left-3 -translate-y-1/2">
 					<Image

@@ -1,12 +1,13 @@
 import ChsHead from "@/components/layouts/ChsHead";
+import RaffleCreation from "@/components/raffle-creation";
 
-const RaffleCreation = () => {
+const RaffleCreationPage = () => {
 	return (
 		<>
 			<ChsHead />
-			<h1>Raffle Creation</h1>
+			<RaffleCreation />
 		</>
 	);
 };
 
-export default RaffleCreation;
+export default RaffleCreationPage;
