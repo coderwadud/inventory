@@ -8,11 +8,11 @@ interface Option {
   qty: string;
   low: string;
 }
-interface SmalltableProps {
+interface SmallTableProps {
     options: Array<Option>
 }
 
-const Smalltable: React.FC<SmalltableProps> = ({
+const SmallTable: React.FC<SmallTableProps> = ({
     options
 }) => {
     return (
@@ -21,7 +21,8 @@ const Smalltable: React.FC<SmalltableProps> = ({
                 <h3 className="text-[18px] font-semibold text-dark">Least Selling Raffles</h3>
                 <Link className="text-sm font-semibold text-primary" href="/">See All</Link>
             </div>
-            <table className="w-full mt-2">
+            <div className="overflow-auto">
+                <table className="w-full mt-2">
                 <tbody className="divide-y divide-[#D9DADF]">
                     {options.map(item => (
                         <tr key={item.id}>
@@ -50,9 +51,10 @@ const Smalltable: React.FC<SmalltableProps> = ({
                         </tr>
                     ))}
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
 	);
 };
 
-export default Smalltable;
+export default SmallTable;

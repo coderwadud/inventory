@@ -5,7 +5,7 @@ interface CounterProps {}
 
 const Counter: React.FC<CounterProps> = () => {
 	return (
-		<div className="grid grid-cols-4 gap-6">
+		<div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6">
 			{CounterData.map(item => (
 				<div key={item.id}>
 					<CardComponent title={item.title} icon={item.icon} count={item.count} />

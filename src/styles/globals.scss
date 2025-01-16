@@ -18,5 +18,24 @@ body{
         filter: brightness(100);
     }
   }
+  .active-body{
+    .sidebar-menu{
+      left: 0%;
+    }
+  }
+
+    .app-body{
+      transition: all 0.3s;
+    }
+    .app-header{
+      transition: all 0.3s;
+    }
+    .sidebar-menu{
+      transition: all 0.3s;
+    }
   
+}
+::before, ::after {
+    border: none !important;
+    border-color: #D0D5DD !important;
 }

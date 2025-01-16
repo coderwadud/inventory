@@ -1,21 +1,23 @@
 import React from "react";
 import Image from "next/image";
 import GraphComponent from "../graph";
-import Smalltable from "../table/smTable";
+import SmallTable from "../table/smTable";
+import InventoryTable from "../inventory-table";
+import { TopInventoryListData } from "@/FakeData/top-inventory-data";
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
     return (
-        <div className="grid grid-cols-3 gap-6 mt-6">
-            <div className="col-span-2">
+        <div className="grid xl:grid-cols-3 grid-cols-1 gap-6 mt-6">
+            <div className="xl:col-span-2">
                 <GraphComponent />
             </div>
-            <div className="col-span-1">
-                <Smalltable options={smTableData} />
+            <div className="xl:col-span-1">
+                <SmallTable options={smTableData} />
             </div>
-            <div className="col-span-3">
-
+            <div className="xl:col-span-3">
+                <InventoryTable items={TopInventoryListData} heading="Top-Selling Inventory"/>
             </div>
         </div>
 	);
