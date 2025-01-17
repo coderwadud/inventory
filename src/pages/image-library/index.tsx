@@ -1,12 +1,12 @@
 import ChsHead from "@/components/layouts/ChsHead";
 
-const ImageLibraryPage = () => {
+const LovePage = () => {
 	return (
 		<>
 			<ChsHead />
-			<h1>Image Library</h1>
+			<h1>Love</h1>
 		</>
 	);
 };
 
-export default ImageLibraryPage;
+export default LovePage;
