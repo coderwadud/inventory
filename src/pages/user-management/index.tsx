@@ -1,10 +1,11 @@
 import ChsHead from "@/components/layouts/ChsHead";
+import UserList from "@/components/user-list";
 
 const UserManagement = () => {
 	return (
 		<>
 			<ChsHead />
-			<h1>User Management</h1>
+			<UserList />
 		</>
 	);
 };
