@@ -39,3 +39,14 @@ body{
     border: none !important;
     border-color: #D0D5DD !important;
 }
+
+@layer components {
+  .form-group{
+    label{
+      @apply block text-sm font-normal text-[#667085] mb-2
+    }
+  }
+  .form-control{
+    @apply text-gray text-sm py-3 px-4 w-full border border-[#D0D5DD] bg-white rounded-lg placeholder:text-dark/15 focus:outline-[#D0D5DD]
+  }
+}

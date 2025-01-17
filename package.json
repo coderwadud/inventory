@@ -9,6 +9,7 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "^3.10.0",
 		"aos": "^2.3.4",
 		"chart.js": "^4.4.7",
 		"dotenv": "^16.4.7",
@@ -19,7 +20,8 @@
 		"react-dom": "^19.0.0",
 		"react-slick": "^0.30.3",
 		"sass": "^1.83.1",
-		"slick-carousel": "^1.8.1"
+		"slick-carousel": "^1.8.1",
+		"yup": "^1.6.1"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",

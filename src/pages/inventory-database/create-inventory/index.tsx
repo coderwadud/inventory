@@ -1,10 +1,11 @@
+import InventoryForm from "@/components/inventory-form";
 import ChsHead from "@/components/layouts/ChsHead";
 
 const CreateInventory = () => {
 	return (
 		<>
             <ChsHead />
-            <h1>Create Inventory</h1>
+			<InventoryForm />
 		</>
 	);
 };
