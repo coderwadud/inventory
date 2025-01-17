@@ -4,9 +4,9 @@
 	"display": "fullscreen",
 	"scope": "/",
 	"start_url": "/",
-	"name": "Premium Facades Description",
+	"name": "Inventory Description",
 	"short_name": "PF",
-	"description": "Premium Facades Description website",
+	"description": "Inventory Description website",
 	"icons": [
 		{
 			"src": "/icon-192x192.png",

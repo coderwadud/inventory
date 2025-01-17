@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true, // Skip ESLint during production builds
   },
+  images: {
+    domains: ['localhost'], // For external images from localhost or other domains
+  },
 };
-
 export default nextConfig;

@@ -1,6 +1,6 @@
 import ChsHead from "@/components/layouts/ChsHead";
 
-const ImageLibrary = () => {
+const ImageLibraryPage = () => {
 	return (
 		<>
 			<ChsHead />
@@ -9,4 +9,4 @@ const ImageLibrary = () => {
 	);
 };
 
-export default ImageLibrary;
+export default ImageLibraryPage;

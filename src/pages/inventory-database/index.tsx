@@ -1,7 +1,7 @@
 import InventoryList from "@/components/inventory-list";
 import ChsHead from "@/components/layouts/ChsHead";
 
-const Database = () => {
+const DatabasePage = () => {
 	return (
 		<>
 			<ChsHead />
@@ -10,4 +10,4 @@ const Database = () => {
 	);
 };
 
-export default Database;
+export default DatabasePage;

@@ -1,13 +1,13 @@
-import InventoryForm from "@/components/inventory-form";
+import CreateInventory from "@/components/create-inventory";
 import ChsHead from "@/components/layouts/ChsHead";
 
-const CreateInventory = () => {
+const CreateInventoryPage = () => {
 	return (
 		<>
             <ChsHead />
-			<InventoryForm />
+			<CreateInventory />
 		</>
 	);
 };
 
-export default CreateInventory;
+export default CreateInventoryPage;

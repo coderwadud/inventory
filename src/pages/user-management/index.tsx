@@ -1,7 +1,7 @@
 import ChsHead from "@/components/layouts/ChsHead";
 import UserList from "@/components/user-list";
 
-const UserManagement = () => {
+const UserManagementPage = () => {
 	return (
 		<>
 			<ChsHead />
@@ -10,4 +10,4 @@ const UserManagement = () => {
 	);
 };
 
-export default UserManagement;
+export default UserManagementPage;
