@@ -1,6 +1,6 @@
 import ChsHead from "@/components/layouts/ChsHead";
 
-const Notifications = () => {
+const NotificationsPage = () => {
 	return (
 		<>
 			<ChsHead />
@@ -9,4 +9,4 @@ const Notifications = () => {
 	);
 };
 
-export default Notifications;
+export default NotificationsPage;

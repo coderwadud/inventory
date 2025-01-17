@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -9,26 +9,58 @@ interface UploadedFile {
   url: string;
 }
 
+interface FormData {
+  prizeName: string;
+  ticketSold: number;
+  price: number;
+  partner: string;
+  stockLevel: string;
+  status: string;
+  thumbnail?: string | null;
+}
+
+interface InventoryFormProps {
+  formHeading: string;
+  initialData?: FormData; // Pre-filled data for the "Update" page
+  onSubmit: (data: FormData) => void; // Custom submit handler
+}
+
 const validationSchema = yup.object().shape({
   prizeName: yup.string().required("Prize Name is required"),
-  ticketSold: yup.number().typeError("Ticket Sold must be a number").required("Ticket Sold is required"),
+  ticketSold: yup
+    .number()
+    .typeError("Ticket Sold must be a number")
+    .required("Ticket Sold is required"),
   price: yup.number().typeError("Price must be a number").required("Price is required"),
   partner: yup.string().required("Partner is required"),
   stockLevel: yup.string().required("Stock Level is required"),
   status: yup.string().required("Status is required"),
 });
 
-const InventoryForm: React.FC = () => {
-  const [file, setFile] = useState<UploadedFile | null>(null);
+const InventoryForm: React.FC<InventoryFormProps> = ({
+  formHeading,
+  initialData,
+  onSubmit,
+}) => {
+  const [file, setFile] = useState<UploadedFile | null>(
+    initialData?.thumbnail ? { url: initialData.thumbnail } : null
+  );
 
   const {
     register,
-      handleSubmit,
-        reset,
+    handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormData>({
+    defaultValues: initialData || {}, // Populate with initial data if provided
     resolver: yupResolver(validationSchema),
   });
+
+  useEffect(() => {
+    if (initialData) {
+      reset(initialData); // Reset form values if initialData changes
+    }
+  }, [initialData, reset]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -42,15 +74,15 @@ const InventoryForm: React.FC = () => {
     setFile(null);
   };
 
-  const onSubmit = (data: any) => {
-      console.log("Form Data:", { ...data, thumbnail: file?.url || null });
-      reset();
+  const handleFormSubmit = (data: FormData) => {
+    onSubmit({ ...data, thumbnail: file?.url || null });
+    reset();
   };
 
   return (
     <div className="border border-[#D0D5DD] rounded-xl p-6 bg-white w-full">
-      <h2 className="text-[18px] font-semibold text-dark mb-8">Create Inventory</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <h2 className="text-[18px] font-semibold text-dark mb-8">{formHeading}</h2>
+      <form onSubmit={handleSubmit(handleFormSubmit)}>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
           <div className="form-group">
             <label htmlFor="prizeName">Prize Name</label>
