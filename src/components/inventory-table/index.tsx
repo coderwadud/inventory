@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Pagination from '../pagination';
 import Image from 'next/image';
 import Link from 'next/link';
+import Dropdown from '../dropdown';
 
 interface InventoryTableProps {
   id: number;
@@ -29,6 +30,14 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ items, headi
   const inventoryDataList = items.slice(startIndex, endIndex);
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
+
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  // Function to handle dropdown toggle
+  const handleDropdownToggle = (id: string) => {
+    setOpenDropdown((prev) => (prev === id ? null : id)); // Toggle the dropdown
+  };
+
 
   return (
     <div className="border border-[#D0D5DD] rounded-xl py-6 bg-white w-full">
@@ -111,7 +120,12 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ items, headi
                   </span>
                 </td>
                 <td className="text-sm text-gray py-3 px-6">
-                  <button className="text-gray-500 hover:text-gray-700">...</button>
+                  <Dropdown
+                    id={item.id}
+                    isOpen={openDropdown === `${item.id}`}
+                    toggleDropdown={() => handleDropdownToggle(`${item.id}`)}
+                    options={options}
+                  />
                 </td>
               </tr>
             ))}
@@ -130,3 +144,20 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ items, headi
 };
 
 export default InventoryTable;
+const options = [
+  {
+  id: 1,
+  name: 'View',
+  icon: '/images/icon/eye.png'
+  },
+  {
+  id: 2,
+  name: 'Edit',
+  icon: '/images/icon/edit.svg'
+  },
+  {
+  id: 3,
+  name: 'Delete',
+  icon: '/images/icon/delete.svg'
+  },
+];
