@@ -42,7 +42,7 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ items, headi
             </svg>
             <span>Filter</span>
           </button>
-          <Link href="/" className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium">
+          <Link href="/inventory-database/create-inventory" className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium">
             + Create New
           </Link>
         </div>
