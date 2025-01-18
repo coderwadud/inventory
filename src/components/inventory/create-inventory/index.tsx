@@ -1,5 +1,5 @@
 import React from "react";
-import InventoryForm, { FormData } from "../inventory-form";
+import InventoryForm, { FormData } from "./../inventory-form";
 import { toast } from 'react-toastify';
 
 
@@ -20,9 +20,8 @@ const CreateInventory: React.FC = () => {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold mb-4">Create Inventory</h1>
       <InventoryForm
-        formHeading="Create New Inventory"
+        formHeading="Create Inventory"
         onSubmit={handleCreate}
       />
     </div>

@@ -50,3 +50,8 @@ body{
     @apply text-gray text-sm py-3 px-4 w-full border border-[#D0D5DD] bg-white rounded-lg placeholder:text-dark/15 focus:outline-[#D0D5DD]
   }
 }
+.best-inventory-table{
+  .table-pagination{
+    display: none;
+  }
+}

@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
-import Pagination from '../pagination';
 import Image from 'next/image';
 import Link from 'next/link';
+import Pagination from '@/components/common/pagination';
 
-interface RaffleCreationTableProps {
-   id: number;
-  title: string;
-  prizeName: string;  // Changed from prizeName: number to prizeName: string
-  startDate: string;  // Changed from number to string for consistency
-  endDate: string;
-  status: string
-  prizeImg: string;
-  titleImg: string;
+interface UserTableProps {
+  id: number;
+  name: string;
+  email: string;
+  address: string;
+  registrationDate: string;
+  status: string;
+  kycRequest: string;
+  imgUrl: string;
 }
 
-interface RaffleCreationTablePropsWithHeading {
-  items: RaffleCreationTableProps[];
+interface UserTablePropsWithHeading {
+  items: UserTableProps[];
   heading: string; // Add heading as part of props
 }
 
-const RaffleCreationTable: React.FC<RaffleCreationTablePropsWithHeading> = ({ items, heading }) => {
+const UserTable: React.FC<UserTablePropsWithHeading> = ({ items, heading }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   // Pagination logic
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const inventoryDataList = items.slice(startIndex, endIndex);
+  const paginatedItems = items.slice(startIndex, endIndex);
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
@@ -38,9 +38,9 @@ const RaffleCreationTable: React.FC<RaffleCreationTablePropsWithHeading> = ({ it
         <div className="flex items-center space-x-2">
           <button className="inline-flex items-center gap-4 px-4 py-3 bg-white text-dark border border-[#E4E7EC] rounded-lg text-sm font-medium">
             <svg width="20" viewBox="0 0 20 20">
-              <use href="/images/sprite.svg#svg-filter"></use>
+              <use href="/images/sprite.svg#svg-sort"></use>
             </svg>
-            <span>Filter</span>
+            <span>Sort</span>
           </button>
           <Link href="/" className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium">
             + Create New
@@ -56,61 +56,60 @@ const RaffleCreationTable: React.FC<RaffleCreationTablePropsWithHeading> = ({ it
               <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">
                 <div className="flex items-center gap-2">
                   <input type="checkbox" />
-                  <span>Title</span>
+                  <span>Name</span>
                 </div>
               </th>
-              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Prize Name</th>
-              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Start Date</th>
-              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">End Date</th>
+              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Email</th>
+              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Address</th>
+              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Registration Date</th>
               <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Status</th>
+              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">KYC Request</th>
               <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Action</th>
             </tr>
           </thead>
           <tbody>
-            {inventoryDataList.map((item) => (
+            {paginatedItems.map((item) => (
               <tr key={item.id} className="border-b !border-[#D0D5DD]">
                 <td className="text-sm text-gray py-3 px-6">
                   <div className="flex items-center gap-3">
                     <input type="checkbox" />
                     <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
                       <Image
-                        src={item.titleImg}
+                        src={item.imgUrl}
                         loading="lazy"
                         height={40}
                         width={40}
                         quality={100}
-                        alt={item.title} // Use name for alt text
+                        alt={item.name}
                         className="object-cover h-10"
                       />
                     </span>
-                    <span className="text-dark font-medium text-sm">{item.title}</span>
+                    <span className="text-dark font-medium text-sm">{item.name}</span>
                   </div>
                 </td>
-                <td className="text-sm text-gray py-3 px-6">
-                  <div className="flex items-center gap-3">
-                    <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
-                      <Image
-                        src={item.prizeImg}
-                        loading="lazy"
-                        height={40}
-                        width={40}
-                        quality={100}
-                        alt={item.titleImg} // Use name for alt text
-                        className="object-cover h-10"
-                      />
-                    </span>
-                    <span>{item.prizeName}</span>
-                  </div>
-                </td>
-                <td className="text-sm text-gray py-3 px-6">{item.startDate}</td>
-                <td className="text-sm text-gray py-3 px-6">{item.endDate}</td>
+                <td className="text-sm text-gray py-3 px-6">{item.email}</td>
+                <td className="text-sm text-gray py-3 px-6">{item.address}</td>
+                <td className="text-sm text-gray py-3 px-6">{item.registrationDate}</td>
                 <td className="text-sm text-gray py-3 px-6">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                      item.status === 'Active' ? 'border-[#D0D5DD] text-[#067647]' : 'border-primary text-primary'
+                      item.status === 'Active'
+                        ? 'border-[#067647] text-[#067647]'
+                        : 'border-primary text-primary'
                     }`}
                   >
                     {item.status}
+                  </span>
+                </td>
+                <td className="text-sm text-gray py-3 px-6">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                      item.kycRequest === 'Approved'
+                        ? 'border-[#067647] text-[#067647]'
+                        : 'border-primary text-primary'
+                    }`}
+                  >
+                    {item.kycRequest}
                   </span>
                 </td>
                 <td className="text-sm text-gray py-3 px-6">
@@ -119,17 +118,15 @@ const RaffleCreationTable: React.FC<RaffleCreationTablePropsWithHeading> = ({ it
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
       </div>
-      {inventoryDataList.length > 9 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page: number) => setCurrentPage(page)}
-        />
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page: number) => setCurrentPage(page)}
+      />
     </div>
   );
 };
 
-export default RaffleCreationTable;
+export default UserTable;

@@ -1,5 +1,5 @@
 import ChsHead from "@/components/layouts/ChsHead";
-import UserList from "@/components/user-list";
+import UserList from "@/components/user/user-list";
 
 const UserManagementPage = () => {
 	return (

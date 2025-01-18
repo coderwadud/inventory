@@ -1,11 +1,11 @@
 import ChsHead from "@/components/layouts/ChsHead";
-import RaffleCreation from "@/components/raffle-creation";
+import RaffleList from "@/components/raffle/list";
 
 const RaffleCreationPage = () => {
 	return (
 		<>
 			<ChsHead />
-			<RaffleCreation />
+			<RaffleList />
 		</>
 	);
 };

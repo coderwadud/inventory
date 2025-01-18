@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router"; // Corrected import
-import InventoryForm, { FormData } from "../inventory-form";
+import InventoryForm, { FormData } from "./../inventory-form";
 import { toast } from 'react-toastify';
 
 const EditInventory: React.FC = () => {
@@ -40,16 +40,15 @@ const EditInventory: React.FC = () => {
     );
     localStorage.setItem("inventory", JSON.stringify(updatedData));
     toast.success("Updated successfully!");
-    router.push("/");
+    router.push("/raffle-creation");
   };
 
   if (isLoading) return <p>Loading...</p>; 
 
   return (
     <div>
-      <h1 className="text-xl font-semibold mb-4">Edit Inventory</h1>
       <InventoryForm
-        formHeading="Edit Inventory Item"
+        formHeading="Edit Inventory"
         initialData={initialData}
         onSubmit={handleUpdate}
       />

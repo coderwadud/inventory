@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import InventoryTable from "../inventory-table";
+import InventoryTable from "./../inventory-table";
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 
 interface InventoryListProps {}
