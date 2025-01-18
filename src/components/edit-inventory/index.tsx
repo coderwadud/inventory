@@ -1,29 +1,59 @@
-import React from "react";
-import InventoryForm from "../inventory-form";
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface EditInventoryProps {}
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router"; // Corrected import
+import InventoryForm, { FormData } from "../inventory-form";
 
-const EditInventory: React.FC<EditInventoryProps> = () => {
-    return (
-        <div className="Edit-inventory">
-            <InventoryForm
-                formHeading="Update Inventory"
-                initialData={{
-                    prizeName: "Sample Prize",
-                    ticketSold: 100,
-                    price: 50,
-                    partner: "Sample Partner",
-                    stockLevel: "50",
-                    status: "Active",
-                    thumbnail: "",
-                }}
-                onSubmit={(data) => console.log("Update Data:", data)}
-                />
+const EditInventory: React.FC = () => {
+  const router = useRouter(); 
+  const { id } = router.query;
+  const [initialData, setInitialData] = useState<FormData | undefined>(undefined); 
+  const [isLoading, setIsLoading] = useState(true);
 
-        </div>
-	);
+  const [inventoryData, setInventoryData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("inventory");
+    if (storedData) {
+      const items = JSON.parse(storedData);
+      setInventoryData(items); // Set the inventory data
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!id || inventoryData.length === 0) return;
+    const item = inventoryData.find((item: FormData) => item.id === id);
+    if (item) {
+      setInitialData(item);
+      setIsLoading(false);
+    } else {
+      alert("Item not found");
+      router.push("/");
+    }
+  }, [id, inventoryData, router]);
+
+  const handleUpdate = (data: FormData) => {
+    const currentData = JSON.parse(localStorage.getItem("inventory") || "[]");
+    const updatedData = currentData.map((item: FormData) =>
+      item.id === id ? { ...item, ...data } : item
+    );
+    localStorage.setItem("inventory", JSON.stringify(updatedData));
+    alert("Inventory item updated successfully!");
+    router.push("/");
+  };
+
+  if (isLoading) return <p>Loading...</p>; 
+
+  return (
+    <div>
+      <h1 className="text-xl font-semibold mb-4">Edit Inventory</h1>
+      <InventoryForm
+        formHeading="Edit Inventory Item"
+        initialData={initialData}
+        onSubmit={handleUpdate}
+      />
+    </div>
+  );
 };
 
 export default EditInventory;
-
-
