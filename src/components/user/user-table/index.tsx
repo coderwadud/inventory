@@ -38,7 +38,7 @@ const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDele
   // Pagination logic
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const inventoryDataList = items.slice(startIndex, endIndex);
+  const usersDataList = items.slice(startIndex, endIndex);
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
   // Dropdown toggle
@@ -48,11 +48,11 @@ const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDele
 
   // Handlers for dropdown actions
   const handleView = (id: number) => {
-    router.push(`/inventory-database/inventory-view/${id}`);
+      toast.success("Block successfully!");
   };
 
   const handleEdit = (id: number) => {
-    router.push(`/inventory-database/${id}`);
+      toast.success("Unblock successfully!");
   };
   
   // Handle Delete
@@ -65,10 +65,10 @@ const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDele
     if (selectedItemId !== null) {
       try {
         onDelete(selectedItemId); // Perform the delete action
-        toast.success("Deleted successfully!");
+        toast.success("Suspend successfully!");
         setIsModalOpen(false); // Close the modal after confirmation
       } catch (error) {
-        toast.error("Deletion failed! Please try again.");
+        toast.error("Suspend failed! Please try again.");
       }
     }
   };
@@ -89,14 +89,14 @@ const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDele
     if (selectAll) {
       setSelectedItems([]); // Deselect all
     } else {
-      const allItemIds = inventoryDataList.map((item) => item.id);
+      const allItemIds = usersDataList.map((item) => item.id);
       setSelectedItems(allItemIds); // Select all
     }
     setSelectAll(!selectAll); // Toggle "Select All" state
   };
 
   // Check if all items on the current page are selected
-  const isAllSelected = inventoryDataList.every((item) =>
+  const isAllSelected = usersDataList.every((item) =>
     selectedItems.includes(item.id)
   );
 
@@ -147,7 +147,7 @@ const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDele
               </tr>
             </thead>
             <tbody>
-              {inventoryDataList.map((item) => (
+              {usersDataList.map((item) => (
                 <tr key={item.id} className="border-b !border-[#D0D5DD]">
                   <td className="text-sm text-gray py-3 px-6">
                     <div className="flex items-center gap-3">
@@ -210,7 +210,7 @@ const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDele
           </table>
         </div>
 
-        {inventoryDataList.length > 9 && (
+        {usersDataList.length > 9 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -224,7 +224,7 @@ const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDele
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
-        message="Delete Inventory"
+        message="User Suspend"
       />
     </>
   );

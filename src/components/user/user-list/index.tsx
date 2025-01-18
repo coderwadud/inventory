@@ -5,31 +5,31 @@ import UserTable from "../user-table";
 interface UserListProps {}
 
 const UserList: React.FC<UserListProps> = () => {
-  const [inventoryData, setInventoryData] = useState<any[]>([]);
+  const [usersData, setUsersData] = useState<any[]>([]);
 
   // Fetch data from localStorage
   useEffect(() => {
     const storedData = localStorage.getItem("user-create");
     if (storedData) {
       const items = JSON.parse(storedData);
-      setInventoryData(items);
+      setUsersData(items);
     }
   }, []);
 
-  // Handle item deletion
+  // Handle item suspend events
   const handleDelete = (id: number) => {
-    const updatedItems = inventoryData.filter((item) => item.id !== id);
-    setInventoryData(updatedItems); // Update state
+    // const updatedItems = usersData.filter((item) => item.id !== id);
+    // setUsersData(updatedItems); // Update state
 
-    // Also update localStorage
-    localStorage.setItem("user-create", JSON.stringify(updatedItems));
+    // // Also update localStorage
+    // localStorage.setItem("user-create", JSON.stringify(updatedItems));
   };
 
   return (
-    <div className="inventory-list">
+    <div className="user-list">
       <UserTable
-        items={inventoryData}
-        heading="Inventory List"
+        items={usersData}
+        heading="Users List"
         onDelete={handleDelete}
       />
     </div>
