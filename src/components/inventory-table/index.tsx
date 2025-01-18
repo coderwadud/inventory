@@ -4,6 +4,8 @@ import Pagination from '../pagination';
 import Image from 'next/image';
 import Link from 'next/link';
 import Dropdown from '../dropdown';
+import { toast } from "react-toastify"; 
+
 
 interface InventoryTableProps {
   id: number;
@@ -50,10 +52,16 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
   const handleEdit = (id: number) => {
     router.push(`/inventory-database/${id}`);
   };
-
+ 
   const handleDelete = (id: number) => {
-    onDelete(id); // Call the delete handler passed from InventoryList
+    try {
+      onDelete(id);
+      toast.success("Deleted successfully!");
+    } catch (error) {
+      toast.error("Deletion failed! Please try again.");
+    }
   };
+
 
   // Handle individual checkbox selection
   const handleCheckboxChange = (id: number) => {

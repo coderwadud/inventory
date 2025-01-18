@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router"; // Corrected import
 import InventoryForm, { FormData } from "../inventory-form";
+import { toast } from 'react-toastify';
 
 const EditInventory: React.FC = () => {
   const router = useRouter(); 
@@ -27,7 +28,7 @@ const EditInventory: React.FC = () => {
       setInitialData(item);
       setIsLoading(false);
     } else {
-      alert("Item not found");
+      toast.error("updated Fail!");
       router.push("/");
     }
   }, [id, inventoryData, router]);
@@ -38,7 +39,7 @@ const EditInventory: React.FC = () => {
       item.id === id ? { ...item, ...data } : item
     );
     localStorage.setItem("inventory", JSON.stringify(updatedData));
-    alert("Inventory item updated successfully!");
+    toast.success("Updated successfully!");
     router.push("/");
   };
 

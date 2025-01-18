@@ -4,6 +4,8 @@ import "../styles/globals.scss";
 import type { AppProps } from "next/app";
 import { useEffect } from "react";
 import AOS from "aos";
+import { ToastContainer } from 'react-toastify';
+
 
 export default function App({ Component, pageProps }: AppProps) {
 	useEffect(() => {
@@ -19,6 +21,7 @@ export default function App({ Component, pageProps }: AppProps) {
 	return (
 		<Layout>
 			<Component {...pageProps} />
+			<ToastContainer />
 		</Layout>
 	);
 }
