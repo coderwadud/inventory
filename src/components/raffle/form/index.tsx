@@ -33,6 +33,11 @@ const validationSchema = yup.object().shape({
   endDate: yup.string().required("End Date is required"),
   status: yup.string().required("Status is required"),
 });
+const getCurrentDate = (): string => {
+  const today = new Date();
+  return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+};
+
 
 const RaffleForm: React.FC<RaffleFormProps> = ({
   formHeading,
@@ -49,7 +54,11 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    defaultValues: initialData || {}, // Populate the form with initial data
+     defaultValues: {
+      ...initialData,
+      startDate: initialData?.startDate || getCurrentDate(),
+      endDate: initialData?.endDate || getCurrentDate(),
+    },// Populate the form with initial data
     resolver: yupResolver(validationSchema),
   });
 

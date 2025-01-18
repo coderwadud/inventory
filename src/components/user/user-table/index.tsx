@@ -99,10 +99,20 @@ const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDele
   const isAllSelected = usersDataList.every((item) =>
     selectedItems.includes(item.id)
   );
+  
 
   const handleCloseModal = () => {
     setIsModalOpen(false); // Close modal on cancel
   };
+   const formatDate = (date: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    };
+    return new Date(date).toLocaleDateString("en-GB", options);
+  };
+  
 
   return (
     <>
@@ -171,8 +181,8 @@ const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDele
                     </div>
                   </td>
                   <td className="text-sm text-gray py-3 px-6">{item.email}</td>
-                  <td className="text-sm text-gray py-3 px-6">${item.access}</td>
-                  <td className="text-sm text-gray py-3 px-6">{item.registrationDate}</td>
+                  <td className="text-sm text-gray py-3 px-6">{item.access}</td>
+                  <td className="text-sm text-gray py-3 px-6">{formatDate(item.registrationDate)}</td>
                   <td className="text-sm text-gray py-3 px-6">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium border ${

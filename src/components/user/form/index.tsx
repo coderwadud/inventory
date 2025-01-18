@@ -35,6 +35,12 @@ const validationSchema = yup.object().shape({
   status: yup.string().required("Status is required"),
 });
 
+const getCurrentDate = (): string => {
+  const today = new Date();
+  return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+};
+
+
 const UserForm: React.FC<UserFormProps> = ({
   formHeading,
   initialData,
@@ -52,7 +58,10 @@ const UserForm: React.FC<UserFormProps> = ({
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    defaultValues: initialData || {}, // Populate the form with initial data
+     defaultValues: {
+      ...initialData,
+      registrationDate: initialData?.registrationDate || getCurrentDate(),
+    }, // Populate the form with initial data
     resolver: yupResolver(validationSchema),
   });
 
