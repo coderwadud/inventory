@@ -1,22 +1,18 @@
 import React from "react";
-import RaffleForm, { FormData } from "./../form";
 import { toast } from 'react-toastify';
+import { DataCreate } from "../../../../utility";
+import AppConst from "../../../../config/app.config";
+import { RaffleFormData } from "../../../../service/raffleDataType";
+import RaffleForm from "../form";
 
 
 const CreateRaffle: React.FC = () => {
-  const handleCreate = (data: FormData) => {
-  if (!data || Object.keys(data).length === 0) {
-    toast.error("Created Unsuccessfully");
-    return;
-  }
-
-  const currentData = JSON.parse(localStorage.getItem("raffle") || "[]");
-  const newItem = { ...data, id: Date.now().toString() }; // Add a unique ID
-  const updatedData = [...currentData, newItem];
-  localStorage.setItem("raffle", JSON.stringify(updatedData));
-  toast.success("Created successfully!");
-};
-
+  const handleCreate = (data: RaffleFormData) => {
+    const dbCollection = AppConst.raffleDbCollection;
+    DataCreate(data, dbCollection, (message: string) => {
+      toast(message);
+    });
+  };
 
   return (
     <div>

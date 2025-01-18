@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import AOS from "aos";
 import { ToastContainer } from 'react-toastify';
 
-
 export default function App({ Component, pageProps }: AppProps) {
 	useEffect(() => {
 		AOS.init({

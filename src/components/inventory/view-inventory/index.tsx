@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { FormData } from "./../inventory-form";
 import Image from "next/image";
+import { FormData } from "../../../../service/inventoryDataType";
 
 const ViewInventory: React.FC = () => {
   const { query } = useRouter();

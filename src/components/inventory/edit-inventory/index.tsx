@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router"; // Corrected import
-import InventoryForm, { FormData } from "./../inventory-form";
+import { useRouter } from "next/router"; 
+import InventoryForm from "./../inventory-form";
 import { toast } from 'react-toastify';
+import { updatedData } from "../../../../utility";
+import AppConst from "../../../../config/app.config";
+import { FormData } from "../../../../service/inventoryDataType";
 
 const EditInventory: React.FC = () => {
   const router = useRouter(); 
   const { id } = router.query;
   const [initialData, setInitialData] = useState<FormData | undefined>(undefined); 
   const [isLoading, setIsLoading] = useState(true);
-
   const [inventoryData, setInventoryData] = useState<any[]>([]);
 
   useEffect(() => {
-    const storedData = localStorage.getItem("inventory");
+    const storedData = localStorage.getItem(AppConst.inventoryDbCollection);
     if (storedData) {
       const items = JSON.parse(storedData);
-      setInventoryData(items); // Set the inventory data
+      setInventoryData(items);
     } else {
       setIsLoading(false);
     }
@@ -28,22 +30,17 @@ const EditInventory: React.FC = () => {
       setInitialData(item);
       setIsLoading(false);
     } else {
-      toast.error("updated Fail!");
+      toast.error("Update failed!");
       router.push("/");
     }
   }, [id, inventoryData, router]);
 
   const handleUpdate = (data: FormData) => {
-    const currentData = JSON.parse(localStorage.getItem("inventory") || "[]");
-    const updatedData = currentData.map((item: FormData) =>
-      item.id === id ? { ...item, ...data } : item
-    );
-    localStorage.setItem("inventory", JSON.stringify(updatedData));
-    toast.success("Updated successfully!");
-    router.push("/raffle-creation");
+    const dbCollection = AppConst.inventoryDbCollection;
+    updatedData(data, dbCollection, (message: string) => { toast(message);});
   };
 
-  if (isLoading) return <p>Loading...</p>; 
+  if (isLoading) return <p>Loading...</p>;
 
   return (
     <div>

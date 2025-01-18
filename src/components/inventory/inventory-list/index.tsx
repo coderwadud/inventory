@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import InventoryTable from "./../inventory-table";
+import AppConst from "../../../../config/app.config";
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-
 interface InventoryListProps {}
 
 const InventoryList: React.FC<InventoryListProps> = () => {
@@ -9,7 +9,7 @@ const InventoryList: React.FC<InventoryListProps> = () => {
 
   // Fetch data from localStorage
   useEffect(() => {
-    const storedData = localStorage.getItem("inventory");
+    const storedData = localStorage.getItem(AppConst.inventoryDbCollection);
     if (storedData) {
       const items = JSON.parse(storedData);
       setInventoryData(items);
@@ -22,8 +22,9 @@ const InventoryList: React.FC<InventoryListProps> = () => {
     setInventoryData(updatedItems); // Update state
 
     // Also update localStorage
-    localStorage.setItem("inventory", JSON.stringify(updatedItems));
+    localStorage.setItem(AppConst.inventoryDbCollection, JSON.stringify(updatedItems));
   };
+  
 
   return (
     <div className="inventory-list">

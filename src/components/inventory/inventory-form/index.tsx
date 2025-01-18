@@ -4,21 +4,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Image from "next/image";
 import Link from "next/link";
+import { FormData } from "../../../../service/inventoryDataType";
 
 
 interface UploadedFile {
   url: string;
-}
-
-export interface FormData {
-  id?: string; // For update functionality
-  prizeName: string;
-  ticketSold: number;
-  price: number;
-  partner: string;
-  stockLevel: string;
-  status: string;
-  thumbnail?: string | null;
 }
 
 interface InventoryFormProps {
