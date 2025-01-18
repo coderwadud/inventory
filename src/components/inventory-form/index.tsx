@@ -5,6 +5,7 @@ import * as yup from "yup";
 import Image from "next/image";
 import Link from "next/link";
 
+
 interface UploadedFile {
   url: string;
 }
