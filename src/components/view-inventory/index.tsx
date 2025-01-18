@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { FormData } from "../inventory-form";
+import Image from "next/image";
 
 const ViewInventory: React.FC = () => {
   const { query } = useRouter();
@@ -24,21 +25,39 @@ const ViewInventory: React.FC = () => {
   if (!inventoryItem) return <p>Item not found</p>;
 
   return (
-    <div>
-      <h1>View Inventory Item</h1>
-      <div>
-        <p><strong>Prize Name:</strong> {inventoryItem.prizeName}</p>
-        <p><strong>Tickets Sold:</strong> {inventoryItem.ticketSold}</p>
-        <p><strong>Price:</strong> ${inventoryItem.price}</p>
-        <p><strong>Partner:</strong> {inventoryItem.partner}</p>
-        <p><strong>Stock Level:</strong> {inventoryItem.stockLevel}%</p>
-        <p><strong>Status:</strong> {inventoryItem.status}</p>
-        {inventoryItem.thumbnail && (
-          <div>
-            <img src={inventoryItem.thumbnail} alt="Thumbnail" width={150} height={80} />
-            <p>Current Thumbnail</p>
-          </div>
-        )}
+    <div className="border border-[rgb(208,213,221)] rounded-xl p-6 bg-white w-full">
+      <h1 className="text-[18px] font-semibold text-dark mb-8">View Inventory</h1>
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+        <div className="form-group">
+          <label>Prize Name</label>
+          <p className="text-sm text-dark">{inventoryItem.prizeName}</p>
+        </div>
+        <div className="form-group">
+          <label>Ticket Sold</label>
+          <p className="text-sm text-dark">{inventoryItem.ticketSold}</p>
+        </div>
+        <div className="form-group">
+          <label>Price</label>
+          <p className="text-sm text-dark">${inventoryItem.price}</p>
+        </div>
+        <div className="form-group">
+          <label>Partner</label>
+          <p className="text-sm text-dark">{inventoryItem.partner}</p>
+        </div>
+        <div className="form-group">
+          <label>Stock Level</label>
+          <p className="text-sm text-dark">{inventoryItem.stockLevel}%</p>
+        </div>
+        <div className="form-group">
+          <label>Status</label>
+          <p className="text-sm text-dark">{inventoryItem.status}</p>
+        </div>
+        <div className="form-group">
+          <label>Prize Image</label>
+          {inventoryItem.thumbnail && (
+            <Image src={inventoryItem.thumbnail} alt={inventoryItem.prizeName} width={150} height={100} />
+          )}
+        </div>
       </div>
     </div>
   );

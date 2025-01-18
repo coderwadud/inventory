@@ -45,7 +45,9 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
   onSubmit,
 }) => {
   const [file, setFile] = useState<UploadedFile | null>(
-    initialData?.thumbnail ? { url: initialData.thumbnail } : null
+    // initialData?.thumbnail ? { url: initialData.thumbnail } : null
+    initialData?.thumbnail ? { url: initialData.thumbnail } : { url: "/images/laptop.webp" }
+
   );
 
   const {
