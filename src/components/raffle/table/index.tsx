@@ -103,6 +103,15 @@ const RaffleTable: React.FC<RaffleTablePropsWithHeading> = ({ heading, items, on
     setIsModalOpen(false); // Close modal on cancel
   };
 
+
+   const formatDate = (date: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    };
+    return new Date(date).toLocaleDateString("en-GB", options);
+  };
   return (
     <>
       <div className="border border-[#D0D5DD] rounded-xl py-6 bg-white w-full">
@@ -184,8 +193,8 @@ const RaffleTable: React.FC<RaffleTablePropsWithHeading> = ({ heading, items, on
                       <span className="text-dark font-medium text-sm">{item.prizeName}</span>
                     </div>
                   </td>
-                  <td className="text-sm text-gray py-3 px-6">{item.startDate}</td>
-                  <td className="text-sm text-gray py-3 px-6">{item.endDate}</td>
+                  <td className="text-sm text-gray py-3 px-6">{formatDate(item.startDate)}</td>
+                  <td className="text-sm text-gray py-3 px-6">{formatDate(item.endDate)}</td>
                   <td className="text-sm text-gray py-3 px-6">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium border ${
