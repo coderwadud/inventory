@@ -10,42 +10,46 @@ interface UploadedFile {
 }
 
 export interface FormData {
-  id?: string; // For update functionality
-  title: string;
-  prizeName: string;
-  startDate: string;
-  endDate: string;
+  id?: number; // Optional for update functionality
+  userName: string;
+  email: string;
+  access: string;
+  registrationDate: string;
   status: string;
+  kycRequest: string;
   thumbnail?: string | null;
 }
 
-interface RaffleFormProps {
+interface UserFormProps {
   formHeading: string;
   initialData?: FormData; // Pre-filled data for update functionality
   onSubmit: (data: FormData) => void; // Submission handler
 }
 
-// Updated validation schema to match FormData interface
 const validationSchema = yup.object().shape({
-  title: yup.string().required("Title is required"),
-  prizeName: yup.string().required("Prize Name is required"),
-  startDate: yup.string().required("Start Date is required"),
-  endDate: yup.string().required("End Date is required"),
+  userName: yup.string().required("User Name is required"),
+  email: yup.string().email("Invalid Email").required("Email is required"),
+  access: yup.string().required("Access is required"),
+  registrationDate: yup.string().required("Registration Date is required"),
+  kycRequest: yup.string().required("KYC Request is required"),
   status: yup.string().required("Status is required"),
 });
+
 const getCurrentDate = (): string => {
   const today = new Date();
   return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
 };
 
 
-const RaffleForm: React.FC<RaffleFormProps> = ({
+const UserForm: React.FC<UserFormProps> = ({
   formHeading,
   initialData,
   onSubmit,
 }) => {
   const [file, setFile] = useState<UploadedFile | null>(
-    initialData?.thumbnail ? { url: initialData.thumbnail } : { url: "/images/laptop.webp" }
+    initialData?.thumbnail
+      ? { url: initialData.thumbnail }
+      : { url: "/images/laptop.webp" }
   );
 
   const {
@@ -56,9 +60,8 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
   } = useForm<FormData>({
      defaultValues: {
       ...initialData,
-      startDate: initialData?.startDate || getCurrentDate(),
-      endDate: initialData?.endDate || getCurrentDate(),
-    },// Populate the form with initial data
+      registrationDate: initialData?.registrationDate || getCurrentDate(),
+    }, // Populate the form with initial data
     resolver: yupResolver(validationSchema),
   });
 
@@ -82,7 +85,6 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
 
   const handleFormSubmit = (data: FormData) => {
     onSubmit({ ...data, thumbnail: file?.url || null });
-    reset();
   };
 
   return (
@@ -91,57 +93,85 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
           <div className="form-group">
-            <label htmlFor="title">Title</label>
+            <label htmlFor="userName">User Name</label>
             <input
               className="form-control"
               type="text"
-              id="title"
-              placeholder="Title"
-              {...register("title")}
+              id="userName"
+              placeholder="Enter User Name"
+              {...register("userName")}
             />
-            {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+            {errors.userName && (
+              <p className="text-red-500 text-sm">{errors.userName.message}</p>
+            )}
           </div>
           <div className="form-group">
-            <label htmlFor="prizeName">Prize Name</label>
+            <label htmlFor="email">Email</label>
             <input
               className="form-control"
-              type="text"
-              id="prizeName"
-              placeholder="Prize Name"
-              {...register("prizeName")}
+              type="email"
+              id="email"
+              placeholder="Enter Email"
+              {...register("email")}
             />
-            {errors.prizeName && <p className="text-red-500 text-sm">{errors.prizeName.message}</p>}
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
           </div>
           <div className="form-group">
-            <label htmlFor="startDate">Start Date</label>
+            <label htmlFor="access">Access</label>
+            <select
+              id="access"
+              className="form-control"
+              {...register("access")}
+            >
+              <option value="Edit">Edit</option>
+              <option value="View">View</option>
+            </select>
+            {errors.access && (
+              <p className="text-red-500 text-sm">{errors.access.message}</p>
+            )}
+          </div>
+          <div className="form-group">
+            <label htmlFor="registrationDate">Registration Date</label>
             <input
               className="form-control"
               type="date"
-              id="startDate"
-              {...register("startDate")}
+              id="registrationDate"
+              {...register("registrationDate")}
             />
-            {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate.message}</p>}
+            {errors.registrationDate && (
+              <p className="text-red-500 text-sm">
+                {errors.registrationDate.message}
+              </p>
+            )}
           </div>
           <div className="form-group">
-            <label htmlFor="endDate">End Date</label>
-            <input
-              className="form-control"
-              type="date"
-              id="endDate"
-              {...register("endDate")}
-            />
-            {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate.message}</p>}
-          </div>
-          <div className="form-group md:col-span-2">
             <label htmlFor="status">Status</label>
             <select id="status" className="form-control" {...register("status")}>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
-            {errors.status && <p className="text-red-500 text-sm">{errors.status.message}</p>}
+            {errors.status && (
+              <p className="text-red-500 text-sm">{errors.status.message}</p>
+            )}
+          </div>
+          <div className="form-group">
+            <label htmlFor="kycRequest">KYC Request</label>
+            <select
+              id="kycRequest"
+              className="form-control"
+              {...register("kycRequest")}
+            >
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+            {errors.kycRequest && (
+              <p className="text-red-500 text-sm">{errors.kycRequest.message}</p>
+            )}
           </div>
           <div className="form-group col-span-2">
-            <label htmlFor="">Thumbnail</label>
             <div className="form-control relative flex flex-col items-center justify-center">
               <div className="absolute left-4 top-[50%] translate-y-[-50%]">
                 {file ? (
@@ -168,7 +198,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
                 ) : (
                   <Image
                     src="/images/thumb.png"
-                    alt="photo"
+                    alt="Default Thumbnail"
                     height={80}
                     width={135}
                     className="w-[140px] h-[110px] object-fill rounded"
@@ -177,11 +207,18 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
               </div>
               <label
                 htmlFor="file-upload"
-                className="cursor-pointer !flex flex-col justify-center items-center text-center"
+                className="cursor-pointer flex flex-col justify-center items-center text-center"
               >
-                <Image src="/images/icon/upload-icon.png" alt="icon" height={40} width={40} />
+                <Image
+                  src="/images/icon/upload-icon.png"
+                  alt="Upload Icon"
+                  height={40}
+                  width={40}
+                />
                 <span className="mt-3 text-sm font-normal text-gray block">
-                  <strong className="text-primary font-semibold">Click to upload </strong>
+                  <strong className="text-primary font-semibold">
+                    Click to upload
+                  </strong>{" "}
                   or drag and drop
                 </span>
                 <span className="text-gray-500 text-sm text-center mt-2">
@@ -217,4 +254,4 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
   );
 };
 
-export default RaffleForm;
+export default UserForm;

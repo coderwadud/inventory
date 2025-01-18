@@ -1,131 +1,242 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
+import Pagination from '../../common/pagination';
 import Image from 'next/image';
 import Link from 'next/link';
-import Pagination from '@/components/common/pagination';
+import Dropdown from '../../common/dropdown';
+import { toast } from "react-toastify"; 
+import ConfirmationModal from '../../common/modal';
 
 interface UserTableProps {
-  id: number;
-  name: string;
+  id: number; // For update functionality
+  userName: string;
   email: string;
-  address: string;
+  access: string;
   registrationDate: string;
   status: string;
   kycRequest: string;
-  imgUrl: string;
+  thumbnail?: string | null;
 }
 
 interface UserTablePropsWithHeading {
-  items: UserTableProps[];
-  heading: string; // Add heading as part of props
+  heading: string;
+  items: UserTableProps[];  // Accepts items as prop
+  onDelete: (id: number) => void; // Accepts delete handler as prop
 }
 
-const UserTable: React.FC<UserTablePropsWithHeading> = ({ items, heading }) => {
+const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]); // Track selected items
+  const [selectAll, setSelectAll] = useState(false); // Track "Select All" checkbox state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+
+  const router = useRouter();
   const itemsPerPage = 10;
 
   // Pagination logic
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedItems = items.slice(startIndex, endIndex);
-
+  const usersDataList = items.slice(startIndex, endIndex);
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
+  // Dropdown toggle
+  const handleDropdownToggle = (id: string) => {
+    setOpenDropdown((prev) => (prev === id ? null : id));
+  };
+
+  // Handlers for dropdown actions
+  const handleView = (id: number) => {
+      toast.success("Block successfully!");
+  };
+
+  const handleEdit = (id: number) => {
+      toast.success("Unblock successfully!");
+  };
+  
+  // Handle Delete
+  const handleDelete = (id: number) => {
+    setSelectedItemId(id); // Store the selected item id
+    setIsModalOpen(true); // Show the modal
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedItemId !== null) {
+      try {
+        onDelete(selectedItemId); // Perform the delete action
+        toast.success("Suspend successfully!");
+        setIsModalOpen(false); // Close the modal after confirmation
+      } catch (error) {
+        toast.error("Suspend failed! Please try again.");
+      }
+    }
+  };
+
+  // Handle individual checkbox selection
+  const handleCheckboxChange = (id: number) => {
+    setSelectedItems((prevSelected) => {
+      if (prevSelected.includes(id)) {
+        return prevSelected.filter((itemId) => itemId !== id); // Deselect
+      } else {
+        return [...prevSelected, id]; // Select
+      }
+    });
+  };
+
+  // Handle "Select All" checkbox
+  const handleSelectAllChange = () => {
+    if (selectAll) {
+      setSelectedItems([]); // Deselect all
+    } else {
+      const allItemIds = usersDataList.map((item) => item.id);
+      setSelectedItems(allItemIds); // Select all
+    }
+    setSelectAll(!selectAll); // Toggle "Select All" state
+  };
+
+  // Check if all items on the current page are selected
+  const isAllSelected = usersDataList.every((item) =>
+    selectedItems.includes(item.id)
+  );
+  
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // Close modal on cancel
+  };
+   const formatDate = (date: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    };
+    return new Date(date).toLocaleDateString("en-GB", options);
+  };
+  
+
   return (
-    <div className="border border-[#D0D5DD] rounded-xl py-6 bg-white w-full">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4 px-6">
-        <h1 className="text-[18px] font-semibold text-dark">{heading}</h1>
-        <div className="flex items-center space-x-2">
-          <button className="inline-flex items-center gap-4 px-4 py-3 bg-white text-dark border border-[#E4E7EC] rounded-lg text-sm font-medium">
-            <svg width="20" viewBox="0 0 20 20">
-              <use href="/images/sprite.svg#svg-sort"></use>
-            </svg>
-            <span>Sort</span>
-          </button>
-          <Link href="/" className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium">
-            + Create New
-          </Link>
+    <>
+      <div className="border border-[#D0D5DD] rounded-xl py-6 bg-white w-full">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4 px-6">
+          <h1 className="text-[18px] font-semibold text-dark">{heading}</h1>
+          <div className="flex items-center space-x-2">
+            <button className="inline-flex items-center gap-4 px-4 py-3 bg-white text-dark border border-[#E4E7EC] rounded-lg text-sm font-medium">
+              <svg width="20" viewBox="0 0 20 20">
+                <use href="/images/sprite.svg#svg-filter"></use>
+              </svg>
+              <span>Filter</span>
+            </button>
+            <Link href="/user-management/user-create" className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium">
+              + Create New
+            </Link>
+          </div>
         </div>
+
+        {/* Table */}
+        <div>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-[#F3F3F5] border-b border-t !border-[#D0D5DD]">
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={isAllSelected}
+                      onChange={handleSelectAllChange}
+                    />
+                    <span>User Name</span>
+                  </div>
+                </th>
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Email</th>
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Access</th>
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Registration Date</th>
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Status</th>
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">KYC Request</th>
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usersDataList.map((item) => (
+                <tr key={item.id} className="border-b !border-[#D0D5DD]">
+                  <td className="text-sm text-gray py-3 px-6">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(item.id)}
+                        onChange={() => handleCheckboxChange(item.id)}
+                      />
+                      <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
+                        <Image
+                          src={item.thumbnail || '/images/laptop.webp'} 
+                          loading="lazy"
+                          height={40}
+                          width={40}
+                          quality={100}
+                          alt={item.userName}
+                          className="object-cover h-10"
+                        />
+                      </span>
+                      <span className="text-dark font-medium text-sm">{item.userName}</span>
+                    </div>
+                  </td>
+                  <td className="text-sm text-gray py-3 px-6">{item.email}</td>
+                  <td className="text-sm text-gray py-3 px-6">{item.access}</td>
+                  <td className="text-sm text-gray py-3 px-6">{formatDate(item.registrationDate)}</td>
+                  <td className="text-sm text-gray py-3 px-6">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                        item.status === 'Active' ? 'border-[#D0D5DD] text-[#067647]' : 'border-primary text-primary'
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="text-sm text-gray py-3 px-6">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                        item.kycRequest === 'Approved' ? 'border-[#D0D5DD] text-[#067647]' :
+                        item.kycRequest === 'Pending' ? 'border-primary text-primary'  : 'border-red-600 text-red-600'
+                      }`}
+                    >
+                      {item.kycRequest}
+                    </span>
+                  </td>
+                  <td className="text-sm text-gray py-3 px-6">
+                    <Dropdown
+                      id={item.id}
+                      isOpen={openDropdown === `${item.id}`}
+                      toggleDropdown={() => handleDropdownToggle(`${item.id}`)}
+                      options={[
+                        { id: 1, name: 'Block', action: () => handleView(item.id) },
+                        { id: 2, name: 'Unblock', action: () => handleEdit(item.id) },
+                        { id: 3, name: 'Suspend', action: () => handleDelete(item.id) },
+                      ]}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {usersDataList.length > 9 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
       </div>
 
-      {/* Table */}
-      <div className="overflow-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-[#F3F3F5] border-b border-t !border-[#D0D5DD]">
-              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">
-                <div className="flex items-center gap-2">
-                  <input type="checkbox" />
-                  <span>Name</span>
-                </div>
-              </th>
-              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Email</th>
-              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Address</th>
-              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Registration Date</th>
-              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Status</th>
-              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">KYC Request</th>
-              <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedItems.map((item) => (
-              <tr key={item.id} className="border-b !border-[#D0D5DD]">
-                <td className="text-sm text-gray py-3 px-6">
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" />
-                    <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
-                      <Image
-                        src={item.imgUrl}
-                        loading="lazy"
-                        height={40}
-                        width={40}
-                        quality={100}
-                        alt={item.name}
-                        className="object-cover h-10"
-                      />
-                    </span>
-                    <span className="text-dark font-medium text-sm">{item.name}</span>
-                  </div>
-                </td>
-                <td className="text-sm text-gray py-3 px-6">{item.email}</td>
-                <td className="text-sm text-gray py-3 px-6">{item.address}</td>
-                <td className="text-sm text-gray py-3 px-6">{item.registrationDate}</td>
-                <td className="text-sm text-gray py-3 px-6">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                      item.status === 'Active'
-                        ? 'border-[#067647] text-[#067647]'
-                        : 'border-primary text-primary'
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-                <td className="text-sm text-gray py-3 px-6">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                      item.kycRequest === 'Approved'
-                        ? 'border-[#067647] text-[#067647]'
-                        : 'border-primary text-primary'
-                    }`}
-                  >
-                    {item.kycRequest}
-                  </span>
-                </td>
-                <td className="text-sm text-gray py-3 px-6">
-                  <button className="text-gray-500 hover:text-gray-700">...</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          </table>
-      </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page: number) => setCurrentPage(page)}
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+        message="User Suspend"
       />
-    </div>
+    </>
   );
 };
 

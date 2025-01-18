@@ -156,7 +156,7 @@ const GraphComponent: React.FC<GraphComponentProps> = () => {
               onClick={() => handleTabChange(tab as "Daily" | "Weekly" | "Monthly")}
               className={`px-4 py-2 text-sm font-medium ${
                 activeTab === tab
-                  ? "bg-red-500 text-white"
+                  ? "bg-primary text-white"
                   : "bg-gray-200 text-gray-700"
               }  transition-all duration-300`}
             >
