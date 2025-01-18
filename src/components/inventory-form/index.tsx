@@ -9,7 +9,8 @@ interface UploadedFile {
   url: string;
 }
 
-interface FormData {
+export interface FormData {
+  id?: string; // For update functionality
   prizeName: string;
   ticketSold: number;
   price: number;
@@ -21,8 +22,8 @@ interface FormData {
 
 interface InventoryFormProps {
   formHeading: string;
-  initialData?: FormData; // Pre-filled data for the "Update" page
-  onSubmit: (data: FormData) => void; // Custom submit handler
+  initialData?: FormData; // Pre-filled data for update functionality
+  onSubmit: (data: FormData) => void; // Submission handler
 }
 
 const validationSchema = yup.object().shape({
@@ -52,13 +53,13 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    defaultValues: initialData || {}, // Populate with initial data if provided
+    defaultValues: initialData || {}, // Populate the form with initial data
     resolver: yupResolver(validationSchema),
   });
 
   useEffect(() => {
     if (initialData) {
-      reset(initialData); // Reset form values if initialData changes
+      reset(initialData); // Reset form with initial data if it changes
     }
   }, [initialData, reset]);
 

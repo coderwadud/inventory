@@ -1,13 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import GraphComponent from "../graph";
 import SmallTable from "../table/smTable";
 import InventoryTable from "../inventory-table";
-import { TopInventoryListData } from "@/FakeData/top-inventory-data";
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
+
+    const [inventoryData, setInventoryData] = useState<any[]>([]);
+  useEffect(() => {
+    const storedData = localStorage.getItem("inventory");
+    if (storedData) {
+      const items = JSON.parse(storedData);
+      setInventoryData(items);
+    }
+  }, []);
+    
+  // Handle item deletion
+  const handleDelete = (id: number) => {
+    const updatedItems = inventoryData.filter((item) => item.id !== id);
+    setInventoryData(updatedItems); // Update state
+
+    // Also update localStorage
+    localStorage.setItem("inventory", JSON.stringify(updatedItems));
+  };
+
+
+  // Assuming you want the top 7 best-sellers (you can adjust the logic here)
+  const bestSellers = inventoryData.slice(0, 7); // Take the top 7 items as best sellers
+
     return (
         <div className="grid xl:grid-cols-3 grid-cols-1 gap-6 mt-6">
             <div className="xl:col-span-2">
@@ -17,7 +39,11 @@ const Dashboard: React.FC<DashboardProps> = () => {
                 <SmallTable options={smTableData} />
             </div>
             <div className="xl:col-span-3">
-                <InventoryTable items={TopInventoryListData} heading="Top-Selling Inventory"/>
+                <InventoryTable
+                    items={bestSellers}
+                    heading="Inventory List"
+                    onDelete={handleDelete}
+                />
             </div>
         </div>
 	);

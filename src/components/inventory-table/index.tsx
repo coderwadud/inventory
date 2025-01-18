@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import Pagination from '../pagination';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -6,38 +7,80 @@ import Dropdown from '../dropdown';
 
 interface InventoryTableProps {
   id: number;
-  name: string;
-  ticketsSold: number;
+  prizeName: string;
+  ticketSold: number;
   price: string;
   partner: string;
   stockLevel: number;
   status: 'Active' | 'Inactive';
-  imgUrl: string;
+  thumbnail: string;
 }
 
 interface InventoryTablePropsWithHeading {
-  items: InventoryTableProps[];
-  heading: string; // Add heading as part of props
+  heading: string;
+  items: InventoryTableProps[];  // Accepts items as prop
+  onDelete: (id: number) => void; // Accepts delete handler as prop
 }
 
-const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ items, heading }) => {
+const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, items, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]); // Track selected items
+  const [selectAll, setSelectAll] = useState(false); // Track "Select All" checkbox state
+
+  const router = useRouter();
   const itemsPerPage = 10;
 
   // Pagination logic
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const inventoryDataList = items.slice(startIndex, endIndex);
-
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-
-  // Function to handle dropdown toggle
+  // Dropdown toggle
   const handleDropdownToggle = (id: string) => {
-    setOpenDropdown((prev) => (prev === id ? null : id)); // Toggle the dropdown
+    setOpenDropdown((prev) => (prev === id ? null : id));
   };
 
+  // Handlers for dropdown actions
+  const handleView = (id: number) => {
+    router.push(`/inventory-database/inventory-view/${id}`);
+  };
+
+  const handleEdit = (id: number) => {
+    router.push(`/inventory-database/${id}`);
+  };
+
+  const handleDelete = (id: number) => {
+    onDelete(id); // Call the delete handler passed from InventoryList
+  };
+
+  // Handle individual checkbox selection
+  const handleCheckboxChange = (id: number) => {
+    setSelectedItems((prevSelected) => {
+      if (prevSelected.includes(id)) {
+        return prevSelected.filter((itemId) => itemId !== id); // Deselect
+      } else {
+        return [...prevSelected, id]; // Select
+      }
+    });
+  };
+
+  // Handle "Select All" checkbox
+  const handleSelectAllChange = () => {
+    if (selectAll) {
+      setSelectedItems([]); // Deselect all
+    } else {
+      const allItemIds = inventoryDataList.map((item) => item.id);
+      setSelectedItems(allItemIds); // Select all
+    }
+    setSelectAll(!selectAll); // Toggle "Select All" state
+  };
+
+  // Check if all items on the current page are selected
+  const isAllSelected = inventoryDataList.every((item) =>
+    selectedItems.includes(item.id)
+  );
 
   return (
     <div className="border border-[#D0D5DD] rounded-xl py-6 bg-white w-full">
@@ -64,7 +107,11 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ items, headi
             <tr className="bg-[#F3F3F5] border-b border-t !border-[#D0D5DD]">
               <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">
                 <div className="flex items-center gap-2">
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={isAllSelected}
+                    onChange={handleSelectAllChange}
+                  />
                   <span>Prize Name</span>
                 </div>
               </th>
@@ -81,23 +128,27 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ items, headi
               <tr key={item.id} className="border-b !border-[#D0D5DD]">
                 <td className="text-sm text-gray py-3 px-6">
                   <div className="flex items-center gap-3">
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.includes(item.id)}
+                      onChange={() => handleCheckboxChange(item.id)}
+                    />
                     <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
                       <Image
-                        src={item.imgUrl}
+                        src={item.thumbnail || '/images/laptop.webp'} 
                         loading="lazy"
                         height={40}
                         width={40}
                         quality={100}
-                        alt={item.name} // Use name for alt text
+                        alt={item.prizeName}
                         className="object-cover h-10"
                       />
                     </span>
-                    <span className="text-dark font-medium text-sm">{item.name}</span>
+                    <span className="text-dark font-medium text-sm">{item.prizeName}</span>
                   </div>
                 </td>
-                <td className="text-sm text-gray py-3 px-6">{item.ticketsSold}</td>
-                <td className="text-sm text-gray py-3 px-6">{item.price}</td>
+                <td className="text-sm text-gray py-3 px-6">{item.ticketSold}</td>
+                <td className="text-sm text-gray py-3 px-6">${item.price}</td>
                 <td className="text-sm text-gray py-3 px-6">{item.partner}</td>
                 <td className="text-sm text-gray py-3 px-6">
                   <div className="flex items-center gap-3">
@@ -124,7 +175,11 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ items, headi
                     id={item.id}
                     isOpen={openDropdown === `${item.id}`}
                     toggleDropdown={() => handleDropdownToggle(`${item.id}`)}
-                    options={options}
+                    options={[
+                      { id: 1, name: 'View', action: () => handleView(item.id) },
+                      { id: 2, name: 'Edit', action: () => handleEdit(item.id) },
+                      { id: 3, name: 'Delete', action: () => handleDelete(item.id) },
+                    ]}
                   />
                 </td>
               </tr>
@@ -132,11 +187,12 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ items, headi
           </tbody>
         </table>
       </div>
+
       {inventoryDataList.length > 9 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={(page: number) => setCurrentPage(page)}
+          onPageChange={(page) => setCurrentPage(page)}
         />
       )}
     </div>
@@ -144,20 +200,3 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ items, headi
 };
 
 export default InventoryTable;
-const options = [
-  {
-  id: 1,
-  name: 'View',
-  icon: '/images/icon/eye.png'
-  },
-  {
-  id: 2,
-  name: 'Edit',
-  icon: '/images/icon/edit.svg'
-  },
-  {
-  id: 3,
-  name: 'Delete',
-  icon: '/images/icon/delete.svg'
-  },
-];
