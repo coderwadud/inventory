@@ -1,4 +1,4 @@
-import Home from "@/components/home";
+import Home from "@/components/dashboard";
 import ChsHead from "@/components/layouts/ChsHead";
 
 const LandingPage = () => {

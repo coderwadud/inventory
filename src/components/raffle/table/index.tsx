@@ -1,30 +1,29 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import Pagination from '../pagination';
+import Pagination from '../../common/pagination';
 import Image from 'next/image';
 import Link from 'next/link';
-import Dropdown from '../dropdown';
+import Dropdown from '../../common/dropdown';
 import { toast } from "react-toastify"; 
-import ConfirmationModal from '../modal';
+import ConfirmationModal from '../../common/modal';
 
-interface InventoryTableProps {
+interface RaffleTableProps {
   id: number;
+  title: string;
   prizeName: string;
-  ticketSold: number;
-  price: string;
-  partner: string;
-  stockLevel: number;
-  status: 'Active' | 'Inactive';
-  thumbnail: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  thumbnail?: string;
 }
 
-interface InventoryTablePropsWithHeading {
+interface RaffleTablePropsWithHeading {
   heading: string;
-  items: InventoryTableProps[];  // Accepts items as prop
+  items: RaffleTableProps[];  // Accepts items as prop
   onDelete: (id: number) => void; // Accepts delete handler as prop
 }
 
-const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, items, onDelete }) => {
+const RaffleTable: React.FC<RaffleTablePropsWithHeading> = ({ heading, items, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<number[]>([]); // Track selected items
@@ -38,7 +37,7 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
   // Pagination logic
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const inventoryDataList = items.slice(startIndex, endIndex);
+  const raffleDataList = items.slice(startIndex, endIndex);
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
   // Dropdown toggle
@@ -48,11 +47,11 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
 
   // Handlers for dropdown actions
   const handleView = (id: number) => {
-    router.push(`/inventory-database/inventory-view/${id}`);
+    router.push(`/raffle-creation/view/${id}`);
   };
 
   const handleEdit = (id: number) => {
-    router.push(`/inventory-database/${id}`);
+    router.push(`/raffle-creation/${id}`);
   };
   
   // Handle Delete
@@ -89,14 +88,14 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
     if (selectAll) {
       setSelectedItems([]); // Deselect all
     } else {
-      const allItemIds = inventoryDataList.map((item) => item.id);
+      const allItemIds = raffleDataList.map((item) => item.id);
       setSelectedItems(allItemIds); // Select all
     }
     setSelectAll(!selectAll); // Toggle "Select All" state
   };
 
   // Check if all items on the current page are selected
-  const isAllSelected = inventoryDataList.every((item) =>
+  const isAllSelected = raffleDataList.every((item) =>
     selectedItems.includes(item.id)
   );
 
@@ -117,14 +116,14 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
               </svg>
               <span>Filter</span>
             </button>
-            <Link href="/inventory-database/create-inventory" className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium">
+            <Link href="/raffle-creation/create-raffle" className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium">
               + Create New
             </Link>
           </div>
         </div>
 
         {/* Table */}
-        <div className="overflow-auto">
+        <div>
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#F3F3F5] border-b border-t !border-[#D0D5DD]">
@@ -135,19 +134,18 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
                       checked={isAllSelected}
                       onChange={handleSelectAllChange}
                     />
-                    <span>Prize Name</span>
+                    <span>Title</span>
                   </div>
                 </th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Tickets Sold</th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Price</th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Partner</th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Stock Level</th>
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Prize Name</th>
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Start Date</th>
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">End Date</th>
                 <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Status</th>
                 <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Action</th>
               </tr>
             </thead>
             <tbody>
-              {inventoryDataList.map((item) => (
+              {raffleDataList.map((item) => (
                 <tr key={item.id} className="border-b !border-[#D0D5DD]">
                   <td className="text-sm text-gray py-3 px-6">
                     <div className="flex items-center gap-3">
@@ -167,23 +165,27 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
                           className="object-cover h-10"
                         />
                       </span>
+                      <span className="text-dark font-medium text-sm">{item.title}</span>
+                    </div>
+                  </td>
+                  <td className="text-sm text-gray py-3 px-6">
+                    <div className="flex items-center gap-3">
+                      <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
+                        <Image
+                          src={item.thumbnail || '/images/laptop.webp'} 
+                          loading="lazy"
+                          height={40}
+                          width={40}
+                          quality={100}
+                          alt={item.prizeName}
+                          className="object-cover h-10"
+                        />
+                      </span>
                       <span className="text-dark font-medium text-sm">{item.prizeName}</span>
                     </div>
                   </td>
-                  <td className="text-sm text-gray py-3 px-6">{item.ticketSold}</td>
-                  <td className="text-sm text-gray py-3 px-6">${item.price}</td>
-                  <td className="text-sm text-gray py-3 px-6">{item.partner}</td>
-                  <td className="text-sm text-gray py-3 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-full bg-[#EAECF0] rounded-full h-2">
-                        <div
-                          className="bg-red-500 h-2 rounded-full"
-                          style={{ width: `${item.stockLevel}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-gray-700 text-sm">{item.stockLevel}%</span>
-                    </div>
-                  </td>
+                  <td className="text-sm text-gray py-3 px-6">{item.startDate}</td>
+                  <td className="text-sm text-gray py-3 px-6">{item.endDate}</td>
                   <td className="text-sm text-gray py-3 px-6">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium border ${
@@ -211,7 +213,7 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
           </table>
         </div>
 
-        {inventoryDataList.length > 9 && (
+        {raffleDataList.length > 9 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -225,10 +227,10 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
-        message="Delete Inventory"
+        message="Delete Raffle"
       />
     </>
   );
 };
 
-export default InventoryTable;
+export default RaffleTable;

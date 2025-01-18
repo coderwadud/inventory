@@ -1,6 +1,6 @@
 import React from "react";
-import UserTable from "../user-table";
 import { UserData } from "@/FakeData/userListData";
+import UserTable from "../user-table";
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface UserListProps {}
 

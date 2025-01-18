@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { FormData } from "../inventory-form";
+import { FormData } from "./../inventory-form";
 import Image from "next/image";
 
 const ViewInventory: React.FC = () => {

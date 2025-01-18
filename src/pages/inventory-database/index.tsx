@@ -1,4 +1,4 @@
-import InventoryList from "@/components/inventory-list";
+import InventoryList from "@/components/inventory/inventory-list";
 import ChsHead from "@/components/layouts/ChsHead";
 
 const DatabasePage = () => {
