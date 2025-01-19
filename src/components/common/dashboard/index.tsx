@@ -1,29 +1,35 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import GraphComponent from "../graph";
 import SmallTable from "./table/smTable";
 import InventoryTable from "../../inventory/inventory-table";
+import { deleteData, fetchUsers } from "../../../../utility";
+import { toast } from "react-toastify";
+import AppConst from "../../../../config/app.config";
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
+const [inventoryData, setInventoryData] = useState<any[]>([]);
 
-    const [inventoryData, setInventoryData] = useState<any[]>([]);
   useEffect(() => {
-    const storedData = localStorage.getItem("inventory");
-    if (storedData) {
-      const items = JSON.parse(storedData);
-      setInventoryData(items);
-    }
+    getAllInventory();
   }, []);
-    
-  // Handle item deletion
-  const handleDelete = (id: number) => {
-    const updatedItems = inventoryData.filter((item) => item.id !== id);
-    setInventoryData(updatedItems); // Update state
 
-    // Also update localStorage
-    localStorage.setItem("inventory", JSON.stringify(updatedItems));
+  const getAllInventory = async () => {
+    const usersData = await fetchUsers(AppConst.inventoryDbCollection);
+    setInventoryData(usersData);
+  };
+
+  // Handle item deletion
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteData(AppConst.inventoryDbCollection, id, (message: string) => {
+      toast(message);
+    });
+      setInventoryData((prevData) => prevData.filter((item) => item.id !== id));
+    } catch (error) {
+      toast.error("Error deleting item. Please try again.");
+    }
   };
 
 

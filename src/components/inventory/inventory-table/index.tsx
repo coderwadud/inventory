@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import ConfirmationModal from '../../common/modal';
 
 interface InventoryTableProps {
-  id: number;
+  id: string;  // Changed to string
   prizeName: string;
   ticketSold: number;
   price: string;
@@ -21,16 +21,16 @@ interface InventoryTableProps {
 interface InventoryTablePropsWithHeading {
   heading: string;
   items: InventoryTableProps[];  // Accepts items as prop
-  onDelete: (id: number) => void; // Accepts delete handler as prop
+  onDelete: (id: string) => void; // Changed to string
 }
 
 const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, items, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [selectedItems, setSelectedItems] = useState<number[]>([]); // Track selected items
+  const [selectedItems, setSelectedItems] = useState<string[]>([]); // Changed to string[]
   const [selectAll, setSelectAll] = useState(false); // Track "Select All" checkbox state
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null); // Changed to string | null
 
   const router = useRouter();
   const itemsPerPage = 10;
@@ -42,21 +42,21 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
   // Dropdown toggle
-  const handleDropdownToggle = (id: string) => {
+  const handleDropdownToggle = (id: string) => { // Changed to string
     setOpenDropdown((prev) => (prev === id ? null : id));
   };
 
   // Handlers for dropdown actions
-  const handleView = (id: number) => {
+  const handleView = (id: string) => { // Changed to string
     router.push(`/inventory-database/inventory-view/${id}`);
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => { // Changed to string
     router.push(`/inventory-database/${id}`);
   };
   
   // Handle Delete
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => { // Changed to string
     setSelectedItemId(id); // Store the selected item id
     setIsModalOpen(true); // Show the modal
   };
@@ -74,7 +74,7 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
   };
 
   // Handle individual checkbox selection
-  const handleCheckboxChange = (id: number) => {
+  const handleCheckboxChange = (id: string) => { // Changed to string
     setSelectedItems((prevSelected) => {
       if (prevSelected.includes(id)) {
         return prevSelected.filter((itemId) => itemId !== id); // Deselect
@@ -195,7 +195,7 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
                   </td>
                   <td className="text-sm text-gray py-3 px-6">
                     <Dropdown
-                      id={item.id}
+                      id={Number(item.id)}
                       isOpen={openDropdown === `${item.id}`}
                       toggleDropdown={() => handleDropdownToggle(`${item.id}`)}
                       options={[
