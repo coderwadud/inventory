@@ -1,0 +1,1 @@
+const love : string = "love"
