@@ -1,3 +1,4 @@
+import LogoutButton from "@/components/common/logout-button";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from 'react';
@@ -67,6 +68,7 @@ const Nav: React.FC<NavProps> = () => {
 					quality={100}
 					/>
 				</Link>
+				<LogoutButton />
 			</div>
 		</div>
 	);

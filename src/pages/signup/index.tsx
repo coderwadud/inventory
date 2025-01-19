@@ -1,15 +1,15 @@
 import ChsHead from "@/components/layouts/ChsHead";
-import Login from "@/components/login";
+import Signup from "@/components/signup";
 import RedirectRoute from "@/routes/RedirectRoute";
 
-const LoginPage = () => {
+const SignupPage = () => {
 	return (
 		<RedirectRoute>
 			<ChsHead />
-			<Login />
+			<Signup />
 		</RedirectRoute>
 	);
 };
-LoginPage.noLayout = true;
 
-export default LoginPage;
+SignupPage.noLayout = true;
+export default SignupPage;
