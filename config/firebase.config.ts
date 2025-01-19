@@ -5,12 +5,6 @@ import { getFirestore } from "firebase/firestore";
 
 // Firebase configuration object
 const firebaseConfig = {
-  // apiKey: "AIzaSyBKe1gXMPtujzHOIliHA6l4ED1HhvHhRiM",
-  // authDomain: "fir-test-ac5c1.firebaseapp.com",
-  // projectId: "fir-test-ac5c1",
-  // storageBucket: "fir-test-ac5c1.firebasestorage.app",
-  // messagingSenderId: "117133927399",
-  // appId: "1:117133927399:web:62ae7a0d12a365786e1342"
    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
