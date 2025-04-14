@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router"; // Corrected import
 import RaffleForm, { FormData } from "./../form";
 import { toast } from 'react-toastify';
+import { updatedData } from "../../../../utility";
+import AppConst from "../../../../config/app.config";
 
 const EditRaffle: React.FC = () => {
   const router = useRouter(); 
@@ -34,13 +36,8 @@ const EditRaffle: React.FC = () => {
   }, [id, raffleData, router]);
 
   const handleUpdate = (data: FormData) => {
-    const currentData = JSON.parse(localStorage.getItem("raffle") || "[]");
-    const updatedData = currentData.map((item: FormData) =>
-      item.id === id ? { ...item, ...data } : item
-    );
-    localStorage.setItem("raffle", JSON.stringify(updatedData));
-    toast.success("Updated successfully!");
-    router.push("./");
+    const dbCollection = AppConst.raffleDbCollection;
+    updatedData(data, dbCollection, (message: string) => { toast(message);});
   };
 
   if (isLoading) return <p>Loading...</p>; 

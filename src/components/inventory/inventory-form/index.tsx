@@ -1,17 +1,18 @@
+// ✅ inventory-form.tsx
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Image from "next/image";
 import Link from "next/link";
-
+import { uploadImageToFirebase } from "../../../../service/uploadImage";
 
 interface UploadedFile {
   url: string;
 }
 
 export interface FormData {
-  id?: string; // For update functionality
+  id?: string;
   prizeName: string;
   ticketSold: number;
   price: number;
@@ -23,16 +24,13 @@ export interface FormData {
 
 interface InventoryFormProps {
   formHeading: string;
-  initialData?: FormData; // Pre-filled data for update functionality
-  onSubmit: (data: FormData) => void; // Submission handler
+  initialData?: FormData;
+  onSubmit: (data: FormData) => void;
 }
 
 const validationSchema = yup.object().shape({
   prizeName: yup.string().required("Prize Name is required"),
-  ticketSold: yup
-    .number()
-    .typeError("Ticket Sold must be a number")
-    .required("Ticket Sold is required"),
+  ticketSold: yup.number().typeError("Ticket Sold must be a number").required("Ticket Sold is required"),
   price: yup.number().typeError("Price must be a number").required("Price is required"),
   partner: yup.string().required("Partner is required"),
   stockLevel: yup.string().required("Stock Level is required"),
@@ -45,10 +43,9 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
   onSubmit,
 }) => {
   const [file, setFile] = useState<UploadedFile | null>(
-    // initialData?.thumbnail ? { url: initialData.thumbnail } : null
-    initialData?.thumbnail ? { url: initialData.thumbnail } : { url: "/images/laptop.webp" }
-
+    initialData?.thumbnail ? { url: initialData.thumbnail } : null
   );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const {
     register,
@@ -56,31 +53,44 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    defaultValues: initialData || {}, // Populate the form with initial data
+    defaultValues: initialData || {},
     resolver: yupResolver(validationSchema),
   });
 
   useEffect(() => {
     if (initialData) {
-      reset(initialData); // Reset form with initial data if it changes
+      reset(initialData);
     }
   }, [initialData, reset]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      const fileUrl = URL.createObjectURL(selectedFile);
-      setFile({ url: fileUrl });
+    const selected = event.target.files?.[0];
+    if (selected) {
+      setSelectedFile(selected);
+      setFile({ url: URL.createObjectURL(selected) });
     }
   };
 
   const removeFile = () => {
     setFile(null);
+    setSelectedFile(null);
   };
 
-  const handleFormSubmit = (data: FormData) => {
-    onSubmit({ ...data, thumbnail: file?.url || null });
+  const handleFormSubmit = async (data: FormData) => {
+    let uploadedUrl = null;
+    if (selectedFile) {
+      uploadedUrl = await uploadImageToFirebase(selectedFile); // ✅ Firebase URL
+    }
+
+    const newData = {
+      ...data,
+      thumbnail: uploadedUrl || null,
+    };
+
+    onSubmit(newData);
     reset();
+    setFile(null);
+    setSelectedFile(null);
   };
 
   return (
@@ -88,59 +98,35 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
       <h2 className="text-[18px] font-semibold text-dark mb-8">{formHeading}</h2>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+          {/* Fields remain unchanged */}
+
           <div className="form-group">
             <label htmlFor="prizeName">Prize Name</label>
-            <input
-              className="form-control"
-              type="text"
-              id="prizeName"
-              placeholder="Prize Name"
-              {...register("prizeName")}
-            />
+            <input className="form-control" type="text" id="prizeName" placeholder="Prize Name" {...register("prizeName")} />
             {errors.prizeName && <p className="text-red-500 text-sm">{errors.prizeName.message}</p>}
           </div>
+
           <div className="form-group">
             <label htmlFor="ticketSold">Ticket Sold</label>
-            <input
-              className="form-control"
-              type="number"
-              id="ticketSold"
-              placeholder="Ticket Sold"
-              {...register("ticketSold")}
-            />
+            <input className="form-control" type="number" id="ticketSold" placeholder="Ticket Sold" {...register("ticketSold")} />
             {errors.ticketSold && <p className="text-red-500 text-sm">{errors.ticketSold.message}</p>}
           </div>
+
           <div className="form-group">
             <label htmlFor="price">Price</label>
             <div className="relative">
-              <Image
-                className="absolute top-[50%] translate-y-[-50%] left-3"
-                alt="icon"
-                height={20}
-                width={20}
-                src="/images/icon/currency-dollar.png"
-              />
-              <input
-                className="form-control pl-8"
-                type="number"
-                id="price"
-                placeholder="Price"
-                {...register("price")}
-              />
+              <Image className="absolute top-[50%] translate-y-[-50%] left-3" alt="icon" height={20} width={20} src="/images/icon/currency-dollar.png" />
+              <input className="form-control pl-8" type="number" id="price" placeholder="Price" {...register("price")} />
             </div>
             {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
           </div>
+
           <div className="form-group">
             <label htmlFor="partner">Partner</label>
-            <input
-              className="form-control"
-              type="text"
-              id="partner"
-              placeholder="Partner"
-              {...register("partner")}
-            />
+            <input className="form-control" type="text" id="partner" placeholder="Partner" {...register("partner")} />
             {errors.partner && <p className="text-red-500 text-sm">{errors.partner.message}</p>}
           </div>
+
           <div className="form-group">
             <label htmlFor="stockLevel">Stock Level</label>
             <select id="stockLevel" className="form-control" {...register("stockLevel")}>
@@ -152,6 +138,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
             </select>
             {errors.stockLevel && <p className="text-red-500 text-sm">{errors.stockLevel.message}</p>}
           </div>
+
           <div className="form-group">
             <label htmlFor="status">Status</label>
             <select id="status" className="form-control" {...register("status")}>
@@ -160,6 +147,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
             </select>
             {errors.status && <p className="text-red-500 text-sm">{errors.status.message}</p>}
           </div>
+          {/* Thumbnail Upload */}
           <div className="form-group col-span-2">
             <div className="form-control relative flex flex-col items-center justify-center">
               <div className="absolute left-4 top-[50%] translate-y-[-50%]">
@@ -194,10 +182,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
                   />
                 )}
               </div>
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer !flex flex-col justify-center items-center text-center"
-              >
+              <label htmlFor="file-upload" className="cursor-pointer !flex flex-col justify-center items-center text-center">
                 <Image src="/images/icon/upload-icon.png" alt="icon" height={40} width={40} />
                 <span className="mt-3 text-sm font-normal text-gray block">
                   <strong className="text-primary font-semibold">Click to upload </strong>

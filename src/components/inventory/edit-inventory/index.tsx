@@ -1,57 +1,75 @@
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router"; // Corrected import
+import { useRouter } from "next/router";
 import InventoryForm, { FormData } from "./../inventory-form";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import AppConst from "../../../../config/app.config";
+import { fetchSingleData, updatedData } from "../../../../utility";
 
 const EditInventory: React.FC = () => {
-  const router = useRouter(); 
-  const { id } = router.query;
-  const [initialData, setInitialData] = useState<FormData | undefined>(undefined); 
+  const router = useRouter();
+  const { id } = router.query; // Get the ID from the query parameters
+  const [initialData, setInitialData] = useState<FormData | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [inventoryData, setInventoryData] = useState<any[]>([]);
-
   useEffect(() => {
-    const storedData = localStorage.getItem("inventory");
-    if (storedData) {
-      const items = JSON.parse(storedData);
-      setInventoryData(items); // Set the inventory data
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
 
-  useEffect(() => {
-    if (!id || inventoryData.length === 0) return;
-    const item = inventoryData.find((item: FormData) => item.id === id);
-    if (item) {
-      setInitialData(item);
-      setIsLoading(false);
-    } else {
-      toast.error("updated Fail!");
-      router.push("/");
-    }
-  }, [id, inventoryData, router]);
+    loadInitialData();
+  }, [id, router]);
 
-  const handleUpdate = (data: FormData) => {
-    const currentData = JSON.parse(localStorage.getItem("inventory") || "[]");
-    const updatedData = currentData.map((item: FormData) =>
-      item.id === id ? { ...item, ...data } : item
-    );
-    localStorage.setItem("inventory", JSON.stringify(updatedData));
-    toast.success("Updated successfully!");
-    router.push("/raffle-creation");
+  const loadInitialData = async () => {
+      if (!id || typeof id !== "string") return;
+
+      try {
+        setIsLoading(true);
+
+        // Fetch single document data from Firestore
+        const data = await fetchSingleData(AppConst.inventoryDbCollection, id);
+
+        if (data) {
+          setInitialData(data); // Set the fetched data as initial form data
+        } else {
+          toast.error("Inventory item not found!");
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Error loading inventory data:", error);
+        toast.error("Failed to load inventory data.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+  const handleUpdate = async (data: FormData) => {
+    if (!id || typeof id !== "string") {
+      toast.error("Invalid item ID!");
+      return;
+    }
+
+    try {
+      // Update the inventory item in Firestore
+      await updatedData(data, AppConst.inventoryDbCollection, (message: string) => {
+        toast(message);
+      }, id);
+      router.push("./");
+    } catch (error) {
+      console.error("Error updating inventory:", error);
+      toast.error("Failed to update inventory.");
+    }
   };
 
-  if (isLoading) return <p>Loading...</p>; 
+  if (isLoading) return <p>Loading...</p>; // Show a loading indicator while fetching data
 
   return (
     <div>
-      <InventoryForm
-        formHeading="Edit Inventory"
-        initialData={initialData}
-        onSubmit={handleUpdate}
-      />
+      {initialData ? (
+        <InventoryForm
+          formHeading="Edit Inventory"
+          initialData={initialData}
+          onSubmit={handleUpdate}
+        />
+      ) : (
+        <p>No data found!</p>
+      )}
     </div>
   );
 };

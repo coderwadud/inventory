@@ -1,22 +1,21 @@
-import React from "react";
-import InventoryForm, { FormData } from "./../inventory-form";
-import { toast } from 'react-toastify';
 
+// ✅ create-inventory.tsx
+import React from "react";
+import InventoryForm from "./../inventory-form";
+import { toast } from "react-toastify";
+import { FormData } from "../../../../service/inventoryDataType";
+import { addPrize } from "../../../../service/prizeService";
 
 const CreateInventory: React.FC = () => {
-  const handleCreate = (data: FormData) => {
-  if (!data || Object.keys(data).length === 0) {
-    toast.error("Created Unsuccessfully");
-    return;
-  }
-
-  const currentData = JSON.parse(localStorage.getItem("inventory") || "[]");
-  const newItem = { ...data, id: Date.now().toString() }; // Add a unique ID
-  const updatedData = [...currentData, newItem];
-  localStorage.setItem("inventory", JSON.stringify(updatedData));
-  toast.success("Created successfully!");
-};
-
+  const handleCreate = async (data: FormData) => {
+    try {
+      await addPrize(data);
+      toast.success("Prize saved successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error saving prize.");
+    }
+  };
 
   return (
     <div>

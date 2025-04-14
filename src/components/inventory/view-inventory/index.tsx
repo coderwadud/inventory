@@ -1,28 +1,43 @@
+import { GetStaticPaths, GetStaticProps } from 'next';
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { FormData } from "./../inventory-form";
 import Image from "next/image";
-
+import { FormData } from "../../../../service/inventoryDataType";
+import { fetchSingleData } from "../../../../utility";
+import { toast } from "react-toastify";
+import AppConst from "../../../../config/app.config";
 const ViewInventory: React.FC = () => {
   const { query } = useRouter();
   const { id } = query;
   const [inventoryItem, setInventoryItem] = useState<FormData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
   useEffect(() => {
-    if (!id) return;
-    const currentData = JSON.parse(localStorage.getItem("inventory") || "[]");
-    const item = currentData.find((item: FormData) => item.id === id);
-    if (item) {
-      setInventoryItem(item); 
-    } else {
-      setInventoryItem(null); 
-    }
     setIsLoading(false); 
+    loadInitialData()
   }, [id]);
-
-  if (isLoading) return <p>Loading...</p>;
-  if (!inventoryItem) return <p>Item not found</p>;
+  const loadInitialData = async () => {
+      if (!id || typeof id !== "string") return;
+      try {
+        setIsLoading(true);
+        // Fetch single document data from Firestore
+        const data = await fetchSingleData(AppConst.inventoryDbCollection, id);
+        setInventoryItem(data);
+      } catch (error) {
+        console.error("Error loading inventory data:", error);
+        toast.error("Failed to load inventory data.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  if (isLoading) return
+    <div className="border border-[rgb(208,213,221)] rounded-xl p-6 bg-white w-full">
+      <p>Loading...</p>
+    </div>;
+  
+    if (!inventoryItem) return
+    <div className="border border-[rgb(208,213,221)] rounded-xl p-6 bg-white w-full">
+      <p>Item not found</p>;
+    </div>
 
   return (
     <div className="border border-[rgb(208,213,221)] rounded-xl p-6 bg-white w-full">
