@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import Image from "next/image";
 
 const Login = () => {
   const [email, setEmail] = useState<string>("");
@@ -46,63 +47,75 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
-        <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
+    <div className="bg-[#F3F3F5] flex items-center">
+      <div className="basis-6/12 bg-white lg:rounded-[65px] overflow-hidden h-dvh">
+        <div className="p-4 lg:p-8 pb-8 md:mb-28">
+            <Image src="/images/logo.svg" alt="logo" height={30} width={150}/>
+        </div>
+        <div className="max-w-[360px] mx-auto">
+          <h2 className="md:text-4xl text-xl text-[#101828] font-semibold mb-2">Log in</h2>
+          <p className="mb-8">Welcome back! Please enter your details.</p>
+          {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+          <div className="mb-5">
+            <p className="mb-1">Email</p>
+            <input
+              type="email"
+              className="block w-full p-3 mb-4 border border-[#D0D5DD] rounded-[8px] outline-none"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="mb-5">
+            <p className="mb-1">Password</p>
+              <input
+                type="password"
+                className="block w-full p-3 mb-4 border border-[#D0D5DD] rounded-[8px] outline-none"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+          </div>
+          <div className="mb-5 flex justify-between items-center">
+            <label className="flex gap-2 text-xs">
+              <input type="checkbox" />
+              Remember for 30 days
+            </label>
+            <Link className="text-[#DC5326] text-xs font-semibold" href='/forgot-password'>Forgot Password</Link>
+          </div>
+           <button
+            onClick={handleLogin}
+            className="w-full p-3 bg-[#DC5326] text-white rounded-lg " > Login </button>
+          <div className="flex justify-between items-center gap-2 mb-5 mt-5">
+            <span className="block bg-[#B3B2B2] h-[1px] w-6/12"></span>
+            <span>or</span>
+            <span className="block bg-[#B3B2B2] h-[1px] w-6/12"></span>
+          </div>
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full p-3 bg-white border border-[#D0D5DD] rounded-lg flex items-center justify-center gap-2"
+          >
+            <Image src="/images/google.svg" alt="icon" height={24} width={24}/>
+            Sign in with Google
+          </button>
+          <button
+            onClick={handleFacebookLogin}
+            className="w-full p-3 bg-white border border-[#D0D5DD] rounded-lg flex items-center justify-center gap-2 mt-5"
+          >
+            <Image src="/images/linkedin.svg" alt="icon" height={24} width={24}/>
+            Sign in with LinkedIn
+          </button>
 
-        {/* Display error message */}
-        {error && <div className="text-red-500 text-center mb-4">{error}</div>}
-
-        {/* Email input */}
-        <input
-          type="email"
-          className="block w-full p-3 mb-4 border border-gray-300 rounded-md"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        {/* Password input */}
-        <input
-          type="password"
-          className="block w-full p-3 mb-4 border border-gray-300 rounded-md"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        {/* Login button */}
-        <button
-          onClick={handleLogin}
-          className="w-full p-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
-        >
-          Login
-        </button>
-
-        {/* Google login button */}
-        <button
-          onClick={handleGoogleLogin}
-          className="w-full p-3 bg-red-500 text-white rounded-md mt-4 hover:bg-red-600 transition duration-200"
-        >
-          Login with Google
-        </button>
-
-        {/* Facebook login button */}
-        <button
-          onClick={handleFacebookLogin}
-          className="w-full p-3 bg-blue-600 text-white rounded-md mt-4 hover:bg-blue-700 transition duration-200"
-        >
-          Login with Facebook
-        </button>
-
-        {/* Signup link */}
-        <p className="mt-4 text-center">
-          Don't have an account?{" "}
-          <Link href="/signup" className="text-blue-500 hover:underline">
-            Sign up
-          </Link>
-          <Link href='/forgot-password'>Forgot Password</Link>
-        </p>
+          <p className="mt-4 text-center">
+            Don't have an account?{" "}
+            <Link href="/signup" className="text-[#DC5326] hover:underline">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
+      <div className="basis-6/12 overflow-hidden">
+        <Image src="/images/login.jpg" alt="img" height={1024} width={720} className="max-w-[720px] ml-auto"/>
       </div>
     </div>
   );

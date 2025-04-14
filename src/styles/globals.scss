@@ -55,3 +55,9 @@ body{
     display: none;
   }
 }
+.line-clamp-1{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: inherit;
+}

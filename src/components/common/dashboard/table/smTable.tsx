@@ -3,10 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { title } from "process";
 interface Option {
-  id: string | number;
+  id: string;
   title: string;
-  qty: string;
-  low: string;
+  image: string;
+  qty: number;
 }
 interface SmallTableProps {
     options: Array<Option>
@@ -15,10 +15,15 @@ interface SmallTableProps {
 const SmallTable: React.FC<SmallTableProps> = ({
     options
 }) => {
+    const limitWords = (text: string, wordLimit = 3): string => {
+        const words = text.trim().split(/\s+/);
+        if (words.length <= wordLimit) return text;
+        return words.slice(0, wordLimit).join(" ") + "...";
+        };
     return (
         <div className="border border-[#D0D5DD] rounded-xl p-6 bg-white">
             <div className="flex justify-between items-center">
-                <h3 className="text-[18px] font-semibold text-dark">Least Selling Raffles</h3>
+                <h3 className="text-[18px] font-semibold text-dark">Least Selling Games</h3>
                 <Link className="text-sm font-semibold text-primary" href="/">See All</Link>
             </div>
             <div className="overflow-auto">
@@ -27,10 +32,20 @@ const SmallTable: React.FC<SmallTableProps> = ({
                     {options.map(item => (
                         <tr key={item.id}>
                             <td className="p-3">
-                                <div className="bg-primary-light h-10 w-10 rounded-full"></div>
+                                <div className="bg-primary-light h-10 w-10 overflow-hidden rounded-lg">
+                                    <Image
+                                    src={item.image}
+                                    alt="icon"
+                                    width={40}
+                                    height={40}
+                                    sizes="100vw"
+                                    quality={100}
+                                    className="object-cover h-10"
+                                />
+                                </div>
                             </td>
                             <td className="p-3">
-                                <strong className="text-sm font-medium text-dark block">{ item.title }</strong>
+                                <strong className="text-sm font-medium text-dark block line-clamp-1">{limitWords(item.title)}</strong>
                                 <p className="text-sm text-normal text-gray">Remaining Quantity :
                                     {item.qty}
                                 </p>
@@ -45,7 +60,7 @@ const SmallTable: React.FC<SmallTableProps> = ({
                                         sizes="100vw"
                                         quality={100}
                                     />
-                                    {item.low}
+                                    Low
                                 </span>
                             </td>
                         </tr>

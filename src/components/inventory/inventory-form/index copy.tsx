@@ -1,4 +1,4 @@
-// ✅ inventory-form.tsx
+// ✅ InventoryForm.tsx
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -42,9 +42,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
   initialData,
   onSubmit,
 }) => {
-  const [file, setFile] = useState<UploadedFile | null>(
-    initialData?.thumbnail ? { url: initialData.thumbnail } : null
-  );
+  const [file, setFile] = useState<UploadedFile | null>(initialData?.thumbnail ? { url: initialData.thumbnail } : null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const {
@@ -67,7 +65,8 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
     const selected = event.target.files?.[0];
     if (selected) {
       setSelectedFile(selected);
-      setFile({ url: URL.createObjectURL(selected) });
+      const fileUrl = URL.createObjectURL(selected);
+      setFile({ url: fileUrl });
     }
   };
 
@@ -79,14 +78,12 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
   const handleFormSubmit = async (data: FormData) => {
     let uploadedUrl = null;
     if (selectedFile) {
-      uploadedUrl = await uploadImageToFirebase(selectedFile); // ✅ Firebase URL
+      uploadedUrl = await uploadImageToFirebase(selectedFile);
     }
-
     const newData = {
       ...data,
       thumbnail: uploadedUrl || null,
     };
-
     onSubmit(newData);
     reset();
     setFile(null);
@@ -98,8 +95,6 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
       <h2 className="text-[18px] font-semibold text-dark mb-8">{formHeading}</h2>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
-          {/* Fields remain unchanged */}
-
           <div className="form-group">
             <label htmlFor="prizeName">Prize Name</label>
             <input className="form-control" type="text" id="prizeName" placeholder="Prize Name" {...register("prizeName")} />
@@ -147,74 +142,36 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
             </select>
             {errors.status && <p className="text-red-500 text-sm">{errors.status.message}</p>}
           </div>
-          {/* Thumbnail Upload */}
+
           <div className="form-group col-span-2">
             <div className="form-control relative flex flex-col items-center justify-center">
               <div className="absolute left-4 top-[50%] translate-y-[-50%]">
                 {file ? (
                   <div className="relative rounded-lg overflow-hidden">
-                    <Image
-                      src={file.url}
-                      width={150}
-                      height={80}
-                      alt="Uploaded file"
-                      className="w-[140px] h-[110px] object-cover rounded"
-                    />
-                    <button
-                      onClick={removeFile}
-                      type="button"
-                      className="absolute top-2 right-2 bg-white text-gray-700 rounded-full shadow h-5 w-5 hover:bg-gray-100"
-                      aria-label="Remove file"
-                    >
-                      ✕
-                    </button>
-                    <p className="text-[8px] text-white mt-2 bg-[#00000033] absolute bottom-0 left-0 w-full text-center">
-                      Current Thumbnail
-                    </p>
+                    <Image src={file.url} width={150} height={80} alt="Uploaded file" className="w-[140px] h-[110px] object-cover rounded" />
+                    <button onClick={removeFile} type="button" className="absolute top-2 right-2 bg-white text-gray-700 rounded-full shadow h-5 w-5 hover:bg-gray-100" aria-label="Remove file">✕</button>
+                    <p className="text-[8px] text-white mt-2 bg-[#00000033] absolute bottom-0 left-0 w-full text-center">Current Thumbnail</p>
                   </div>
                 ) : (
-                  <Image
-                    src="/images/thumb.png"
-                    alt="photo"
-                    height={80}
-                    width={135}
-                    className="w-[140px] h-[110px] object-fill rounded"
-                  />
+                  <Image src="/images/thumb.png" alt="photo" height={80} width={135} className="w-[140px] h-[110px] object-fill rounded" />
                 )}
               </div>
+
               <label htmlFor="file-upload" className="cursor-pointer !flex flex-col justify-center items-center text-center">
                 <Image src="/images/icon/upload-icon.png" alt="icon" height={40} width={40} />
                 <span className="mt-3 text-sm font-normal text-gray block">
-                  <strong className="text-primary font-semibold">Click to upload </strong>
-                  or drag and drop
+                  <strong className="text-primary font-semibold">Click to upload </strong>or drag and drop
                 </span>
-                <span className="text-gray-500 text-sm text-center mt-2">
-                  SVG, PNG, JPG, or GIF (max: 800x400px)
-                </span>
-                <input
-                  id="file-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
+                <span className="text-gray-500 text-sm text-center mt-2">SVG, PNG, JPG, or GIF (max: 800x400px)</span>
+                <input id="file-upload" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
               </label>
             </div>
           </div>
         </div>
+
         <div className="flex justify-end items-center gap-4 mt-6">
-          <Link
-            href="./"
-            className="inline-flex items-center gap-4 px-4 py-3 bg-white text-dark border border-[#E4E7EC] rounded-lg text-sm font-medium"
-          >
-            Cancel
-          </Link>
-          <button
-            type="submit"
-            className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium"
-          >
-            Save
-          </button>
+          <Link href="./" className="inline-flex items-center gap-4 px-4 py-3 bg-white text-dark border border-[#E4E7EC] rounded-lg text-sm font-medium">Cancel</Link>
+          <button type="submit" className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium">Save</button>
         </div>
       </form>
     </div>

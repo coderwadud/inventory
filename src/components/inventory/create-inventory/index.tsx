@@ -1,16 +1,20 @@
+
+// ✅ create-inventory.tsx
 import React from "react";
 import InventoryForm from "./../inventory-form";
-import { toast } from 'react-toastify';
-import AppConst from "../../../../config/app.config";
-import { DataCreate } from "../../../../utility";
+import { toast } from "react-toastify";
 import { FormData } from "../../../../service/inventoryDataType";
+import { addPrize } from "../../../../service/prizeService";
 
 const CreateInventory: React.FC = () => {
-  const handleCreate = (data: FormData) => {
-    const dbCollection = AppConst.inventoryDbCollection;
-    DataCreate(data, dbCollection, (message: string) => {
-      toast(message);
-    });
+  const handleCreate = async (data: FormData) => {
+    try {
+      await addPrize(data);
+      toast.success("Prize saved successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error saving prize.");
+    }
   };
 
   return (

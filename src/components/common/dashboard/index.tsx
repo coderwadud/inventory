@@ -5,8 +5,17 @@ import InventoryTable from "../../inventory/inventory-table";
 import { deleteData, fetchUsers } from "../../../../utility";
 import { toast } from "react-toastify";
 import AppConst from "../../../../config/app.config";
+import { getAllRaffles } from "../../../../service/raffleService";
+
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface DashboardProps {}
+// types/raffle.d.ts
+export interface RaffleItem {
+  id: string;
+  title: string;
+  image: string;
+  qty: number;
+}
 
 const Dashboard: React.FC<DashboardProps> = () => {
 const [inventoryData, setInventoryData] = useState<any[]>([]);
@@ -31,7 +40,15 @@ const [inventoryData, setInventoryData] = useState<any[]>([]);
       toast.error("Error deleting item. Please try again.");
     }
   };
+   const [raffles, setRaffles] = useState<RaffleItem[]>([]);
 
+  useEffect(() => {
+    const fetchRaffles = async () => {
+      const data = await getAllRaffles(4);
+      setRaffles(data);
+    };
+    fetchRaffles();
+  }, []);
 
   // Assuming you want the top 7 best-sellers (you can adjust the logic here)
   const bestSellers = inventoryData.slice(0, 5); // Take the top 7 items as best sellers
@@ -42,7 +59,7 @@ const [inventoryData, setInventoryData] = useState<any[]>([]);
                 <GraphComponent />
             </div>
             <div className="xl:col-span-1">
-                <SmallTable options={smTableData} />
+                <SmallTable options={raffles} />
             </div>
             <div className="xl:col-span-3">
                 <div className="best-inventory-table">
@@ -61,35 +78,40 @@ export default Dashboard;
 
 
 
-interface smTableDataType {
-    id: number;
-    title: string;
-    qty: string;
-    low: string;
-}
-const smTableData : Array<smTableDataType> = [
-    {
-        id: 1,
-        title: "Iphone 6",
-        qty: "100",
-        low: "20"
-    },
-    {
-        id: 2,
-        title: "Iphone 6",
-        qty: "100",
-        low: "20"
-    },
-    {
-        id: 3,
-        title: "Iphone 6",
-        qty: "100",
-        low: "20"
-    },
-    {
-        id: 4,
-        title: "Iphone 6",
-        qty: "100",
-        low: "20"
-    },
-]
+// interface smTableDataType {
+//     id: number;
+//     title: string;
+//     qty: string;
+//     low: string;
+//     image: string
+// }
+// const smTableData : Array<smTableDataType> = [
+//     {
+//         id: 1,
+//         title: "Iphone 6",
+//         qty: "100",
+//         low: "Low",
+//         image: "/images/icon/5.svg",
+//     },
+//     {
+//         id: 2,
+//         title: "Iphone 6",
+//         qty: "100",
+//         low: "Low",
+//         image: "/images/icon/5.svg",
+//     },
+//     {
+//         id: 3,
+//         title: "Iphone 6",
+//         qty: "100",
+//         low: "Low",
+//         image: "/images/icon/5.svg",
+//     },
+//     {
+//         id: 4,
+//         title: "Iphone 6",
+//         qty: "100",
+//         low: "Low",
+//         image: "/images/icon/5.svg",
+//     },
+// ]
