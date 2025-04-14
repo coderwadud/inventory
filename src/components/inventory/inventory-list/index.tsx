@@ -1,12 +1,10 @@
+// components/InventoryList.tsx
 import React, { useEffect, useState } from "react";
 import InventoryTable from "./../inventory-table";
-import AppConst from "../../../../config/app.config";
 import { fetchUsers, deleteData } from "../../../../utility";
 import { toast } from "react-toastify";
 
-interface InventoryListProps {}
-
-const InventoryList: React.FC<InventoryListProps> = () => {
+const InventoryList: React.FC = () => {
   const [inventoryData, setInventoryData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -14,16 +12,22 @@ const InventoryList: React.FC<InventoryListProps> = () => {
   }, []);
 
   const getAllInventory = async () => {
-    const usersData = await fetchUsers(AppConst.inventoryDbCollection);
-    setInventoryData(usersData);
+    try {
+      // Fetch inventory data from the "Prize_Database" collection
+      const inventoryData = await fetchUsers("prize_database");
+      setInventoryData(inventoryData);
+    } catch (error) {
+      console.error("Error fetching inventory data:", error);
+      toast.error("Failed to fetch inventory data.");
+    }
   };
 
   // Handle item deletion
   const handleDelete = async (id: string) => {
     try {
-      await deleteData(AppConst.inventoryDbCollection, id, (message: string) => {
-      toast(message);
-    });
+      await deleteData("prize_database", id, (message: string) => {
+        toast(message);
+      });
       setInventoryData((prevData) => prevData.filter((item) => item.id !== id));
     } catch (error) {
       toast.error("Error deleting item. Please try again.");
@@ -34,7 +38,7 @@ const InventoryList: React.FC<InventoryListProps> = () => {
     <div className="inventory-list">
       <InventoryTable
         items={inventoryData}
-        heading="Inventory List"
+        heading="Prize Inventory List"
         onDelete={handleDelete}
       />
     </div>

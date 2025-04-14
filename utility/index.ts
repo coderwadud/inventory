@@ -133,7 +133,7 @@ export const deleteData = async (
   try {
     const docRef = doc(db, dbCollection, id);
     await deleteDoc(docRef); // Delete from Firestore
-    message("Item Deleted successfully!"); // Success message
+    // message("Item Deleted successfully!"); // Success message
   } catch (error) {
     console.error("Error deleting document: ", error);
     message("Item Delete Unsuccessful"); // Error message

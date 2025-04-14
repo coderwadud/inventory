@@ -5,7 +5,6 @@ import Image from "next/image";
 import { FormData } from "../../../../service/inventoryDataType";
 import { fetchSingleData } from "../../../../utility";
 import { toast } from "react-toastify";
-import AppConst from "../../../../config/app.config";
 const ViewInventory: React.FC = () => {
   const { query } = useRouter();
   const { id } = query;
@@ -20,7 +19,7 @@ const ViewInventory: React.FC = () => {
       try {
         setIsLoading(true);
         // Fetch single document data from Firestore
-        const data = await fetchSingleData(AppConst.inventoryDbCollection, id);
+        const data = await fetchSingleData("prize_database", id);
         setInventoryItem(data);
       } catch (error) {
         console.error("Error loading inventory data:", error);
