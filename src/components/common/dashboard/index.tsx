@@ -2,10 +2,23 @@ import React, { useEffect, useState } from "react";
 import GraphComponent from "../graph";
 import SmallTable from "./table/smTable";
 import InventoryTable from "../../inventory/inventory-table";
-import { deleteData, fetchUsers } from "../../../../utility";
+import { deleteData } from "../../../../utility";
 import { toast } from "react-toastify";
-import AppConst from "../../../../config/app.config";
 import { getAllRaffles } from "../../../../service/raffleService";
+import { collection, getDocs, query, limit } from "firebase/firestore";
+import { db } from "../../../../config/firebase.config";
+
+export const fetchUser = async (collectionName: string, limitCount: number = 5) => {
+  const collectionRef = collection(db, collectionName);
+  const q = query(collectionRef, limit(limitCount)); // Limit the results to `limitCount`
+  
+  const snapshot = await getDocs(q);
+  const data = snapshot.docs.map(doc => ({
+    id: doc.id,  // Include document ID in the result
+    ...doc.data() // Include document data
+  }));
+  return data;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface DashboardProps {}
@@ -21,20 +34,26 @@ const Dashboard: React.FC<DashboardProps> = () => {
 const [inventoryData, setInventoryData] = useState<any[]>([]);
 
   useEffect(() => {
-    getAllInventory();
+    getTopInventory();
   }, []);
 
-  const getAllInventory = async () => {
-    const usersData = await fetchUsers(AppConst.inventoryDbCollection);
-    setInventoryData(usersData);
+  const getTopInventory = async () => {
+    try {
+      // Fetch top 5 items from the "Prize_Database" collection
+      const topInventory = await fetchUser("prize_database", 5); // Limit to 5 items
+      setInventoryData(topInventory);
+    } catch (error) {
+      console.error("Error fetching top inventory data:", error);
+      toast.error("Failed to fetch top inventory data.");
+    }
   };
 
   // Handle item deletion
   const handleDelete = async (id: string) => {
     try {
-      await deleteData(AppConst.inventoryDbCollection, id, (message: string) => {
-      toast(message);
-    });
+      await deleteData("prize_database", id, (message: string) => {
+        toast(message);
+      });
       setInventoryData((prevData) => prevData.filter((item) => item.id !== id));
     } catch (error) {
       toast.error("Error deleting item. Please try again.");
@@ -64,7 +83,7 @@ const [inventoryData, setInventoryData] = useState<any[]>([]);
             <div className="xl:col-span-3">
                 <div className="best-inventory-table">
                     <InventoryTable
-                        items={bestSellers}
+                        items={inventoryData}
                         heading="Inventory List"
                         onDelete={handleDelete}
                     />

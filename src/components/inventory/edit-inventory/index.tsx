@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import InventoryForm, { FormData } from "./../inventory-form";
 import { toast } from "react-toastify";
-import AppConst from "../../../../config/app.config";
 import { fetchSingleData, updatedData } from "../../../../utility";
 
 const EditInventory: React.FC = () => {
@@ -23,7 +22,7 @@ const EditInventory: React.FC = () => {
         setIsLoading(true);
 
         // Fetch single document data from Firestore
-        const data = await fetchSingleData(AppConst.inventoryDbCollection, id);
+        const data = await fetchSingleData("prize_database", id);
 
         if (data) {
           setInitialData(data); // Set the fetched data as initial form data
@@ -47,7 +46,7 @@ const EditInventory: React.FC = () => {
 
     try {
       // Update the inventory item in Firestore
-      await updatedData(data, AppConst.inventoryDbCollection, (message: string) => {
+      await updatedData(data, "prize_database", (message: string) => {
         toast(message);
       }, id);
       router.push("./");
