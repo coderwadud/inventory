@@ -1,88 +1,113 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Image from "next/image";
 import Link from "next/link";
+import { uploadImageToFirebase } from "../../../../service/uploadImage";
+import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
+import { db } from "../../../../config/firebase.config";
+import { toast } from "react-toastify";
 
 interface UploadedFile {
   url: string;
 }
 
 export interface FormData {
-  id?: string; // For update functionality
+  id: any;
   title: string;
-  prizeName: string;
-  startDate: string;
-  endDate: string;
+  picture: string;
+  description: string;
+  createdAt: string;
+  expiryDate: string;
   status: string;
-  thumbnail?: string | null;
 }
 
 interface RaffleFormProps {
   formHeading: string;
-  initialData?: FormData; // Pre-filled data for update functionality
-  onSubmit: (data: FormData) => void; // Submission handler
+  initialData?: any;
+  onSubmit: (data: any) => void;
+  // No need to pass onSubmit from parent anymore; logic is inside this component
 }
 
-// Updated validation schema to match FormData interface
 const validationSchema = yup.object().shape({
   title: yup.string().required("Title is required"),
-  prizeName: yup.string().required("Prize Name is required"),
-  startDate: yup.string().required("Start Date is required"),
-  endDate: yup.string().required("End Date is required"),
+  description: yup.string().required("Prize Name is required"),
+  createdAt: yup.string().required("Start Date is required"),
+  expiryDate: yup.string().required("End Date is required"),
   status: yup.string().required("Status is required"),
 });
+
 const getCurrentDate = (): string => {
   const today = new Date();
-  return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+  return today.toISOString().split("T")[0];
 };
 
-
-const RaffleForm: React.FC<RaffleFormProps> = ({
-  formHeading,
-  initialData,
-  onSubmit,
-}) => {
+const RaffleForm: React.FC<RaffleFormProps> = ({ formHeading, initialData }) => {
   const [file, setFile] = useState<UploadedFile | null>(
-    initialData?.thumbnail ? { url: initialData.thumbnail } : { url: "/images/laptop.webp" }
+    initialData?.picture ? { url: initialData.picture } : null
   );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
-     defaultValues: {
-      ...initialData,
-      startDate: initialData?.startDate || getCurrentDate(),
-      endDate: initialData?.endDate || getCurrentDate(),
-    },// Populate the form with initial data
+  } = useForm<any>({
+    defaultValues: initialData || {},
     resolver: yupResolver(validationSchema),
   });
 
   useEffect(() => {
     if (initialData) {
-      reset(initialData); // Reset form with initial data if it changes
+      reset(initialData);
     }
   }, [initialData, reset]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      const fileUrl = URL.createObjectURL(selectedFile);
-      setFile({ url: fileUrl });
+    const selected = event.target.files?.[0];
+    if (selected) {
+      setSelectedFile(selected);
+      setFile({ url: URL.createObjectURL(selected) });
     }
   };
 
   const removeFile = () => {
     setFile(null);
+    setSelectedFile(null);
   };
 
-  const handleFormSubmit = (data: FormData) => {
-    onSubmit({ ...data, thumbnail: file?.url || null });
-    reset();
+  const handleFormSubmit = async (data: FormData) => {
+    try {
+      let uploadedUrl = "";
+
+      if (selectedFile) {
+        uploadedUrl = await uploadImageToFirebase(selectedFile);
+      }
+
+      const createdData = {
+        ...data,
+        picture: uploadedUrl || initialData?.picture || "",
+        createdAt: new Date(data.createdAt),
+        expiryDate: new Date(data.expiryDate),
+      };
+
+      // Create new document
+      const docRef = await addDoc(collection(db, "raffles"), createdData);
+
+      // Update with document ID
+      await updateDoc(doc(db, "raffles", docRef.id), { id: docRef.id });
+      toast.success("Raffle successfully created!");
+
+      reset();
+      setFile(null);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error creating raffle:", error);
+    }
   };
 
   return (
@@ -99,7 +124,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
               placeholder="Title"
               {...register("title")}
             />
-            {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+            {/* {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>} */}
           </div>
           <div className="form-group">
             <label htmlFor="prizeName">Prize Name</label>
@@ -108,9 +133,9 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
               type="text"
               id="prizeName"
               placeholder="Prize Name"
-              {...register("prizeName")}
+              {...register("description")}
             />
-            {errors.prizeName && <p className="text-red-500 text-sm">{errors.prizeName.message}</p>}
+            {/* {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>} */}
           </div>
           <div className="form-group">
             <label htmlFor="startDate">Start Date</label>
@@ -118,9 +143,9 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
               className="form-control"
               type="date"
               id="startDate"
-              {...register("startDate")}
+              {...register("createdAt")}
             />
-            {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate.message}</p>}
+            {/* {errors.createdAt && <p className="text-red-500 text-sm">{errors.createdAt.message}</p>} */}
           </div>
           <div className="form-group">
             <label htmlFor="endDate">End Date</label>
@@ -128,9 +153,9 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
               className="form-control"
               type="date"
               id="endDate"
-              {...register("endDate")}
+              {...register("expiryDate")}
             />
-            {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate.message}</p>}
+            {/* {errors.expiryDate && <p className="text-red-500 text-sm">{errors.expiryDate.message}</p>} */}
           </div>
           <div className="form-group md:col-span-2">
             <label htmlFor="status">Status</label>
@@ -138,7 +163,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
-            {errors.status && <p className="text-red-500 text-sm">{errors.status.message}</p>}
+            {/* {errors.status && <p className="text-red-500 text-sm">{errors.status.message}</p>} */}
           </div>
           <div className="form-group col-span-2">
             <label htmlFor="">Thumbnail</label>

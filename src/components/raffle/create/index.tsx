@@ -1,19 +1,19 @@
 import React from "react";
 import { toast } from 'react-toastify';
-import { DataCreate } from "../../../../utility";
-import AppConst from "../../../../config/app.config";
-import { RaffleFormData } from "../../../../service/raffleDataType";
 import RaffleForm from "../form";
+import { addGame } from "../../../../service/gameCreation";
 
 
 const CreateRaffle: React.FC = () => {
-  const handleCreate = (data: RaffleFormData) => {
-    const dbCollection = AppConst.raffleDbCollection;
-    DataCreate(data, dbCollection, (message: string) => {
-      toast(message);
-    });
+  const handleCreate = async (data: any) => {
+    try {
+      await addGame(data);
+      toast.success("Prize saved successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error saving prize.");
+    }
   };
-
   return (
     <div>
       <RaffleForm

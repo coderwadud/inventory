@@ -1,7 +1,8 @@
 {
-	"name": "premium-facades",
+	"name": "RaffleFox",
 	"version": "0.1.0",
 	"private": true,
+	"license": "MIT",
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
@@ -18,10 +19,8 @@
 		"react-chartjs-2": "^5.3.0",
 		"react-dom": "^19.0.0",
 		"react-hook-form": "^7.54.2",
-		"react-slick": "^0.30.3",
 		"react-toastify": "^11.0.3",
 		"sass": "^1.83.1",
-		"slick-carousel": "^1.8.1",
 		"yup": "^1.6.1"
 	},
 	"devDependencies": {
@@ -30,7 +29,6 @@
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
-		"@types/react-slick": "^0.23.13",
 		"eslint": "^9",
 		"eslint-config-next": "15.1.4",
 		"postcss": "^8",

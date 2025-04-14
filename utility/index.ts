@@ -65,8 +65,8 @@ export const fetchUsers = async (dbCollection: string) => {
  * @returns - Single document data
  */
 export const fetchSingleData = async (
-  dbCollection: string,
-  id: string
+  dbCollection: any,
+  id: any
 ): Promise<any | null> => {
   try {
     const docRef = doc(db, dbCollection, id);
