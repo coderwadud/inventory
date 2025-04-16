@@ -1,31 +1,44 @@
 import React from "react";
-import UserForm, { FormData } from "./../form";
-import { toast } from 'react-toastify';
+import UserForm, { FormData } from "../form";
+import { toast } from "react-toastify";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
+import { db, storage } from "../../../../config/firebase.config";
 
+const CreateUser = () => {
+  const handleCreateUser = async (formData: FormData, file?: File | null) => {
+    try {
+      let profilePictureUrl = "";
 
-const CreateUser: React.FC = () => {
-  const handleCreate = (data: FormData) => {
-  if (!data || Object.keys(data).length === 0) {
-    toast.error("Created Unsuccessfully");
-    return;
-  }
+      if (file) {
+        const storageRef = ref(storage, `profile_pictures/${uuidv4()}`);
+        await uploadBytes(storageRef, file);
+        profilePictureUrl = await getDownloadURL(storageRef);
+      }
 
-  const currentData = JSON.parse(localStorage.getItem("user-create") || "[]");
-  const newItem = { ...data, id: Date.now().toString() }; // Add a unique ID
-  const updatedData = [...currentData, newItem];
-  localStorage.setItem("user-create", JSON.stringify(updatedData));
-  toast.success("Created successfully!");
-};
+      const newUser = {
+        uid: uuidv4(),
+        name: formData.name,
+        email: formData.email,
+        userType: formData.userType,
+        kycRequest: formData.kycRequest,
+        profilePicture: profilePictureUrl || "",
+        isBanned: false,
+        credits: 0,
+        age: 25,
+        createdAt: serverTimestamp(),
+      };
 
+      await addDoc(collection(db, "users"), newUser);
+      toast.success("User created successfully!");
+    } catch (error) {
+      console.error("Error creating user:", error);
+      toast.error("Failed to create user.");
+    }
+  };
 
-  return (
-    <div>
-      <UserForm
-        formHeading="Create User"
-        onSubmit={handleCreate}
-      />
-    </div>
-  );
+  return <UserForm formHeading="Create User" onSubmit={handleCreateUser} />;
 };
 
 export default CreateUser;

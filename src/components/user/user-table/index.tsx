@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import Pagination from '../../common/pagination';
-import Image from 'next/image';
-import Link from 'next/link';
-import Dropdown from '../../common/dropdown';
-import { toast } from "react-toastify"; 
-import ConfirmationModal from '../../common/modal';
+// components/pages/user-table.tsx
 
-interface UserTableProps {
-  id: number; // For update functionality
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import Link from "next/link";
+import ConfirmationModal from "@/components/common/modal";
+import Pagination from "@/components/common/pagination";
+import Dropdown from "@/components/common/dropdown";
+
+interface User {
+  id: string;
   userName: string;
   email: string;
   access: string;
@@ -18,93 +18,31 @@ interface UserTableProps {
   thumbnail?: string | null;
 }
 
-interface UserTablePropsWithHeading {
+interface UserTableProps {
   heading: string;
-  items: UserTableProps[];  // Accepts items as prop
-  onDelete: (id: number) => void; // Accepts delete handler as prop
+  items: User[];
+  onBlock: (id: string) => void;
+  onUnblock: (id: string) => void;
+  onSuspend: (id: string) => void;
 }
 
-const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDelete }) => {
+const UserTable: React.FC<UserTableProps> = ({
+  heading,
+  items,
+  onBlock,
+  onUnblock,
+  onSuspend,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [selectedItems, setSelectedItems] = useState<number[]>([]); // Track selected items
-  const [selectAll, setSelectAll] = useState(false); // Track "Select All" checkbox state
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
-  const router = useRouter();
   const itemsPerPage = 10;
-
-  // Pagination logic
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const usersDataList = items.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(items.length / itemsPerPage);
+  const paginatedItems = items.slice(startIndex, startIndex + itemsPerPage);
 
-  // Dropdown toggle
-  const handleDropdownToggle = (id: string) => {
-    setOpenDropdown((prev) => (prev === id ? null : id));
-  };
-
-  // Handlers for dropdown actions
-  const handleView = (id: number) => {
-      toast.success("Block successfully!");
-  };
-
-  const handleEdit = (id: number) => {
-      toast.success("Unblock successfully!");
-  };
-  
-  // Handle Delete
-  const handleDelete = (id: number) => {
-    setSelectedItemId(id); // Store the selected item id
-    setIsModalOpen(true); // Show the modal
-  };
-
-  const handleConfirmDelete = () => {
-    if (selectedItemId !== null) {
-      try {
-        onDelete(selectedItemId); // Perform the delete action
-        toast.success("Suspend successfully!");
-        setIsModalOpen(false); // Close the modal after confirmation
-      } catch (error) {
-        toast.error("Suspend failed! Please try again.");
-      }
-    }
-  };
-
-  // Handle individual checkbox selection
-  const handleCheckboxChange = (id: number) => {
-    setSelectedItems((prevSelected) => {
-      if (prevSelected.includes(id)) {
-        return prevSelected.filter((itemId) => itemId !== id); // Deselect
-      } else {
-        return [...prevSelected, id]; // Select
-      }
-    });
-  };
-
-  // Handle "Select All" checkbox
-  const handleSelectAllChange = () => {
-    if (selectAll) {
-      setSelectedItems([]); // Deselect all
-    } else {
-      const allItemIds = usersDataList.map((item) => item.id);
-      setSelectedItems(allItemIds); // Select all
-    }
-    setSelectAll(!selectAll); // Toggle "Select All" state
-  };
-
-  // Check if all items on the current page are selected
-  const isAllSelected = usersDataList.every((item) =>
-    selectedItems.includes(item.id)
-  );
-  
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false); // Close modal on cancel
-  };
-   const formatDate = (date: string) => {
+  const formatDate = (date: string) => {
     const options: Intl.DateTimeFormatOptions = {
       day: "2-digit",
       month: "short",
@@ -112,129 +50,136 @@ const UserTable: React.FC<UserTablePropsWithHeading> = ({ heading, items, onDele
     };
     return new Date(date).toLocaleDateString("en-GB", options);
   };
-  
+
+  const handleDropdownToggle = (id: string) => {
+    setOpenDropdown(openDropdown === id ? null : id);
+  };
+
+  const handleBlockUser = (id: string) => {
+    onBlock(id);
+    toast.success("User blocked successfully!");
+  };
+
+  const handleUnblockUser = (id: string) => {
+    onUnblock(id);
+    toast.success("User unblocked successfully!");
+  };
+
+  const handleSuspendUser = (id: string) => {
+    setSelectedItemId(id);
+    setIsModalOpen(true);
+  };
+
+  const confirmSuspend = () => {
+    if (selectedItemId) {
+      onSuspend(selectedItemId);
+      toast.success("User suspended (deleted) successfully!");
+      setIsModalOpen(false);
+    }
+  };
 
   return (
     <>
       <div className="border border-[#D0D5DD] rounded-xl py-6 bg-white w-full">
-        {/* Header */}
         <div className="flex justify-between items-center mb-4 px-6">
           <h1 className="text-[18px] font-semibold text-dark">{heading}</h1>
-          <div className="flex items-center space-x-2">
-            <button className="inline-flex items-center gap-4 px-4 py-3 bg-white text-dark border border-[#E4E7EC] rounded-lg text-sm font-medium">
-              <svg width="20" viewBox="0 0 20 20">
-                <use href="/images/sprite.svg#svg-filter"></use>
-              </svg>
-              <span>Filter</span>
-            </button>
-            <Link href="/user-management/user-create" className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium">
-              + Create New
-            </Link>
-          </div>
+          <Link
+            href="/user-management/user-create"
+            className="inline-block px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium"
+          >
+            + Create New
+          </Link>
         </div>
 
-        {/* Table */}
-        <div>
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#F3F3F5] border-b border-t !border-[#D0D5DD]">
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={isAllSelected}
-                      onChange={handleSelectAllChange}
-                    />
-                    <span>User Name</span>
-                  </div>
-                </th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Email</th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Access</th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Registration Date</th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Status</th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">KYC Request</th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Action</th>
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-[#F3F3F5] border-b border-t !border-[#D0D5DD]">
+              <th className="py-3 px-6 text-[12px] font-medium text-gray">User</th>
+              <th className="py-3 px-6 text-[12px] font-medium text-gray">Email</th>
+              <th className="py-3 px-6 text-[12px] font-medium text-gray">Access</th>
+              <th className="py-3 px-6 text-[12px] font-medium text-gray">Date</th>
+              <th className="py-3 px-6 text-[12px] font-medium text-gray">Status</th>
+              <th className="py-3 px-6 text-[12px] font-medium text-gray">KYC</th>
+              <th className="py-3 px-6 text-[12px] font-medium text-gray">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedItems.map((item) => (
+              <tr key={item.id} className="border-b !border-[#D0D5DD]">
+                <td className="py-3 px-6 text-sm text-gray flex items-center gap-2">
+                  <img
+                    src={item.thumbnail || "/images/laptop.webp"}
+                    alt={item.userName}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                  <span>{item.userName}</span>
+                </td>
+                <td className="py-3 px-6 text-sm">{item.email}</td>
+                <td className="py-3 px-6 text-sm">{item.access}</td>
+                <td className="py-3 px-6 text-sm">{formatDate(item.registrationDate)}</td>
+                <td className="py-3 px-6 text-sm">
+                  <span className={`px-2 py-1 rounded-full text-xs border font-medium ${
+                    item.status === "Active"
+                      ? "text-[#067647] border-[#D0D5DD]"
+                      : "text-primary border-primary"
+                  }`}>
+                    {item.status}
+                  </span>
+                </td>
+                <td className="py-3 px-6 text-sm">
+                  <span className={`px-2 py-1 rounded-full text-xs border font-medium ${
+                    item.kycRequest === "Approved"
+                      ? "text-[#067647] border-[#D0D5DD]"
+                      : item.kycRequest === "Pending"
+                      ? "text-primary border-primary"
+                      : "text-red-600 border-red-600"
+                  }`}>
+                    {item.kycRequest}
+                  </span>
+                </td>
+                <td className="py-3 px-6 text-sm">
+                  <Dropdown
+                    id={item.id}
+                    isOpen={openDropdown === item.id}
+                    toggleDropdown={() => handleDropdownToggle(item.id)}
+                    options={[
+                      {
+                        id: 1,
+                        name: "Block",
+                        action: () => handleBlockUser(item.id),
+                      },
+                      {
+                        id: 2,
+                        name: "Unblock",
+                        action: () => handleUnblockUser(item.id),
+                      },
+                      {
+                        id: 3,
+                        name: "Suspend",
+                        action: () => handleSuspendUser(item.id),
+                      },
+                    ]}
+                  />
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {usersDataList.map((item) => (
-                <tr key={item.id} className="border-b !border-[#D0D5DD]">
-                  <td className="text-sm text-gray py-3 px-6">
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        onChange={() => handleCheckboxChange(item.id)}
-                      />
-                      <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
-                        <Image
-                          src={item.thumbnail || '/images/laptop.webp'} 
-                          loading="lazy"
-                          height={40}
-                          width={40}
-                          quality={100}
-                          alt={item.userName}
-                          className="object-cover h-10"
-                        />
-                      </span>
-                      <span className="text-dark font-medium text-sm">{item.userName}</span>
-                    </div>
-                  </td>
-                  <td className="text-sm text-gray py-3 px-6">{item.email}</td>
-                  <td className="text-sm text-gray py-3 px-6">{item.access}</td>
-                  <td className="text-sm text-gray py-3 px-6">{formatDate(item.registrationDate)}</td>
-                  <td className="text-sm text-gray py-3 px-6">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                        item.status === 'Active' ? 'border-[#D0D5DD] text-[#067647]' : 'border-primary text-primary'
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="text-sm text-gray py-3 px-6">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                        item.kycRequest === 'Approved' ? 'border-[#D0D5DD] text-[#067647]' :
-                        item.kycRequest === 'Pending' ? 'border-primary text-primary'  : 'border-red-600 text-red-600'
-                      }`}
-                    >
-                      {item.kycRequest}
-                    </span>
-                  </td>
-                  <td className="text-sm text-gray py-3 px-6">
-                    <Dropdown
-                      id={item.id}
-                      isOpen={openDropdown === `${item.id}`}
-                      toggleDropdown={() => handleDropdownToggle(`${item.id}`)}
-                      options={[
-                        { id: 1, name: 'Block', action: () => handleView(item.id) },
-                        { id: 2, name: 'Unblock', action: () => handleEdit(item.id) },
-                        { id: 3, name: 'Suspend', action: () => handleDelete(item.id) },
-                      ]}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
 
-        {usersDataList.length > 9 && (
+        {items.length > 10 && (
           <Pagination
             currentPage={currentPage}
-            totalPages={totalPages}
+            totalPages={Math.ceil(items.length / itemsPerPage)}
             onPageChange={(page) => setCurrentPage(page)}
           />
         )}
       </div>
 
-      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmDelete}
-        message="User Suspend"
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={confirmSuspend}
+        message="Are you sure you want to suspend this user?"
       />
     </>
   );

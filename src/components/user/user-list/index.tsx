@@ -1,36 +1,68 @@
+// components/pages/user-management/UserList.tsx
+
 import React, { useEffect, useState } from "react";
 import UserTable from "../user-table";
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+import {
+  collection,
+  getDocs,
+  updateDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import { db } from "../../../../config/firebase.config";
 
-interface UserListProps {}
-
-const UserList: React.FC<UserListProps> = () => {
+const UserList: React.FC = () => {
   const [usersData, setUsersData] = useState<any[]>([]);
 
-  // Fetch data from localStorage
-  useEffect(() => {
-    const storedData = localStorage.getItem("user-create");
-    if (storedData) {
-      const items = JSON.parse(storedData);
-      setUsersData(items);
+  const fetchUsers = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      const users = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          userName: data.name || "",
+          email: data.email || "",
+          access: data.userType || "",
+          registrationDate: data.createdAt ? data.createdAt.toDate().toISOString() : "",
+          status: data.isBanned ? "Blocked" : "Active",
+          kycRequest: data.kycRequest || "Pending",
+          thumbnail: data.profilePicture || null,
+        };
+      });
+      setUsersData(users);
+    } catch (error) {
+      console.error("Error fetching users:", error);
     }
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
-  // Handle item suspend events
-  const handleDelete = (id: number) => {
-    // const updatedItems = usersData.filter((item) => item.id !== id);
-    // setUsersData(updatedItems); // Update state
+  const handleBlock = async (id: string) => {
+    await updateDoc(doc(db, "users", id), { isBanned: true });
+    fetchUsers();
+  };
 
-    // // Also update localStorage
-    // localStorage.setItem("user-create", JSON.stringify(updatedItems));
+  const handleUnblock = async (id: string) => {
+    await updateDoc(doc(db, "users", id), { isBanned: false });
+    fetchUsers();
+  };
+
+  const handleSuspend = async (id: string) => {
+    await deleteDoc(doc(db, "users", id));
+    fetchUsers();
   };
 
   return (
     <div className="user-list">
       <UserTable
-        items={usersData}
         heading="Users List"
-        onDelete={handleDelete}
+        items={usersData}
+        onBlock={handleBlock}
+        onUnblock={handleUnblock}
+        onSuspend={handleSuspend}
       />
     </div>
   );
