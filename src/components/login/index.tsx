@@ -48,7 +48,7 @@ const Login = () => {
 
   return (
     <div className="bg-[#F3F3F5] flex items-center">
-      <div className="basis-6/12 bg-white lg:rounded-[65px] overflow-hidden h-dvh">
+      <div className="basis-6/12 bg-white lg:rounded-[65px] overflow-hidden h-[100vh]">
         <div className="p-4 lg:p-8 pb-8 md:mb-28">
             <Image src="/images/logo.svg" alt="logo" height={30} width={150}/>
         </div>

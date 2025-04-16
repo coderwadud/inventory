@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import LogoutButton from "../common/logout-button";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface SidebarProps {}
@@ -21,7 +22,7 @@ const Sidebar: React.FC<SidebarProps> = () => {
   }, [isActive]);
 
   return (
-    <div className="sidebar-menu bg-white max-w-[250px] h-screen p-4 lg:py-8 fixed top-0 lg:left-0 left-[-100%] z-40 w-full">
+    <div className="sidebar-menu bg-white max-w-[250px] h-screen p-4 lg:py-8 fixed top-0 lg:left-0 left-[-100%] z-40 w-full flex flex-col">
       <div className="flex justify-center items-center mb-6 text-center">
         <Image
           src="/images/logo.png"
@@ -63,6 +64,8 @@ const Sidebar: React.FC<SidebarProps> = () => {
           );
         })}
       </ul>
+
+				<LogoutButton />
     </div>
   );
 };

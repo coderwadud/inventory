@@ -22,7 +22,7 @@ export const getAllRaffles = async (limitCount = 4): Promise<RaffleItem[]> => {
     return {
       id: doc.id,
       title: data.title || "Untitled",
-      image: data.picture || "/images/default.png",
+      image: data.picture || "/images/Avatars.png",
       qty: data.ticketsSold || 0,
     };
   });

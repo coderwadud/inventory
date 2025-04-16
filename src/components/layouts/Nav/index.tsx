@@ -2,25 +2,37 @@ import LogoutButton from "@/components/common/logout-button";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from 'react';
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "../../../../config/firebase.config";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface NavProps {}
 
 const Nav: React.FC<NavProps> = () => {
+ const [isActive, setIsActive] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-	const [isActive, setIsActive] = useState(false);
-	const toggleDarkMode = () => {
-		setIsActive((prev) => !prev);
-	};
+  const toggleDarkMode = () => {
+    setIsActive((prev) => !prev);
+  };
 
-	useEffect(() => {
-		if (isActive) {
-		document.body.classList.add('active-body');
-		} else {
-		document.body.classList.remove('active-body');
-		}
-	}, [isActive]);
-	
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (isActive) {
+      document.body.classList.add("active-body");
+    } else {
+      document.body.classList.remove("active-body");
+    }
+  }, [isActive]);
+
+  const profilePicture = currentUser?.photoURL || "/images/Avatars.png";
+
 	return (
 		<div className="app-header flex md:p-6 p-4 justify-between items-center bg-white border-b border-[#D0D5DD] fixed top-0 right-0 lg:w-[calc(100%-250px)] z-20 w-full">
 		<button className="block lg:hidden"
@@ -58,17 +70,13 @@ const Nav: React.FC<NavProps> = () => {
 					quality={100}
 					/>
 				</Link>
-				<Link href="/" className="w-10 h-10 block">
-					<Image
-					src="/images/icon/bell.svg"
-					alt="logo"
-					width={40}
-					height={40}
-					sizes="100vw"
-					quality={100}
+				<Link href="/" className="w-10 h-10 overflow-hidden rounded-full block">
+					<img
+						src={profilePicture}
+						alt="logo"
+						className="h-10 w-10 object-cover"
 					/>
 				</Link>
-				<LogoutButton />
 			</div>
 		</div>
 	);
