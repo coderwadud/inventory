@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = () => {
     <div className="sidebar-menu bg-white max-w-[250px] h-screen p-4 lg:py-8 fixed top-0 lg:left-0 left-[-100%] z-40 w-full flex flex-col">
       <div className="flex justify-center items-center mb-6 text-center">
         <Image
-          src="/images/logo.png"
+          src="/images/logo.svg"
           alt="logo"
           width={162}
           height={44}
