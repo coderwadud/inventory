@@ -21,6 +21,7 @@
 		"react-hook-form": "^7.54.2",
 		"react-toastify": "^11.0.3",
 		"sass": "^1.83.1",
+		"uuid": "^11.1.0",
 		"yup": "^1.6.1"
 	},
 	"devDependencies": {

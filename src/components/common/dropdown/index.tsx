@@ -1,13 +1,13 @@
 import React from 'react';
 
 interface DropdownOption {
-  id: number;
+  id: any;
   name: string;
   action: () => void;
 }
 
 interface DropdownProps {
-  id: number;
+  id: any;
   options: DropdownOption[];
   isOpen: boolean;
   toggleDropdown: () => void;
