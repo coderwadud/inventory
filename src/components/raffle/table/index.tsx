@@ -6,15 +6,17 @@ import Link from 'next/link';
 import Dropdown from '../../common/dropdown';
 import { toast } from "react-toastify"; 
 import ConfirmationModal from '../../common/modal';
+import { Timestamp } from 'firebase/firestore';
 
 interface RaffleTableProps {
-  id: number;
+  id: any;
   title: string;
-  prizeName: string;
-  startDate: string;
-  endDate: string;
+  picture: string;
+  description: string;
+  editedGamePicture: string;
+  createdAt: string;
+  expiryDate: string;
   status: string;
-  thumbnail?: string;
 }
 
 interface RaffleTablePropsWithHeading {
@@ -104,14 +106,23 @@ const RaffleTable: React.FC<RaffleTablePropsWithHeading> = ({ heading, items, on
   };
 
 
-   const formatDate = (date: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    };
-    return new Date(date).toLocaleDateString("en-GB", options);
+   
+const formatDate = (date: Timestamp | Date | string) => {
+  const jsDate = date instanceof Timestamp ? date.toDate() : new Date(date);
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   };
+  return jsDate.toLocaleDateString("en-GB", options); // e.g., "15 Apr 2025"
+};
+  const limitWords = (text: string, wordLimit = 3): string => {
+        const words = text.trim().split(/\s+/);
+        if (words.length <= wordLimit) return text;
+        return words.slice(0, wordLimit).join(" ") + "...";
+        };
+  console.log(raffleDataList);
+  
   return (
     <>
       <div className="border border-[#D0D5DD] rounded-xl py-6 bg-white w-full">
@@ -165,44 +176,47 @@ const RaffleTable: React.FC<RaffleTablePropsWithHeading> = ({ heading, items, on
                       />
                       <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
                         <Image
-                          src={item.thumbnail || '/images/laptop.webp'} 
+                          src={item.picture || '/images/laptop.webp'} 
                           loading="lazy"
                           height={40}
                           width={40}
                           quality={100}
-                          alt={item.prizeName}
+                          alt={item.title}
                           className="object-cover h-10"
                         />
                       </span>
-                      <span className="text-dark font-medium text-sm">{item.title}</span>
+                      <span className="text-dark font-medium text-sm">{limitWords(item.title)}</span>
                     </div>
                   </td>
                   <td className="text-sm text-gray py-3 px-6">
                     <div className="flex items-center gap-3">
                       <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
                         <Image
-                          src={item.thumbnail || '/images/laptop.webp'} 
+                          src={item.editedGamePicture || '/images/laptop.webp'} 
                           loading="lazy"
                           height={40}
                           width={40}
                           quality={100}
-                          alt={item.prizeName}
+                          alt={item.description}
                           className="object-cover h-10"
                         />
                       </span>
-                      <span className="text-dark font-medium text-sm">{item.prizeName}</span>
+                      <span className="text-dark font-medium text-sm">{limitWords(item.description)}</span>
                     </div>
                   </td>
-                  <td className="text-sm text-gray py-3 px-6">{formatDate(item.startDate)}</td>
-                  <td className="text-sm text-gray py-3 px-6">{formatDate(item.endDate)}</td>
+                  <td className="text-sm text-gray py-3 px-6">{formatDate(item.createdAt)}</td>
+                  <td className="text-sm text-gray py-3 px-6">{formatDate(item.expiryDate)}</td>
                   <td className="text-sm text-gray py-3 px-6">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                        item.status === 'Active' ? 'border-[#D0D5DD] text-[#067647]' : 'border-primary text-primary'
-                      }`}
-                    >
-                      {item.status}
-                    </span>
+                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                      (item.status || "Active") === "Active"
+                        ? "border-[#D0D5DD] text-[#067647]"
+                        : "border-primary text-primary"
+                    }`}
+                  >
+                    {item.status || "Active"}
+                  </span>
+
                   </td>
                   <td className="text-sm text-gray py-3 px-6">
                     <Dropdown
