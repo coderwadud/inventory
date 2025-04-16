@@ -17,8 +17,9 @@ const LogoutButton: React.FC = () => {
   };
 
   return (
-    <button onClick={handleLogout} className="logout-button">
-      Logout
+    <button onClick={handleLogout} className="logout-button text-md font-semibold flex items-center gap-2 pt-8 border-[#F2F4F7] border-t w-full mt-auto">
+      Log Out
+      <img src="/images/icon/log-out.svg" alt="icon" />
     </button>
   );
 };

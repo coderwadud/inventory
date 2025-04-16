@@ -42,6 +42,7 @@ body{
 
 @layer components {
   .form-group{
+    
     label{
       @apply block text-sm font-normal text-[#667085] mb-2
     }
