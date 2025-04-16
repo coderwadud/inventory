@@ -124,7 +124,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({ formHeading, initialData }) => 
               placeholder="Title"
               {...register("title")}
             />
-            {/* {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>} */}
+            {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
           </div>
           <div className="form-group">
             <label htmlFor="prizeName">Prize Name</label>
@@ -135,7 +135,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({ formHeading, initialData }) => 
               placeholder="Prize Name"
               {...register("description")}
             />
-            {/* {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>} */}
+            {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
           </div>
           <div className="form-group">
             <label htmlFor="startDate">Start Date</label>
@@ -145,7 +145,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({ formHeading, initialData }) => 
               id="startDate"
               {...register("createdAt")}
             />
-            {/* {errors.createdAt && <p className="text-red-500 text-sm">{errors.createdAt.message}</p>} */}
+            {errors.createdAt && <p className="text-red-500 text-sm">{errors.createdAt.message}</p>}
           </div>
           <div className="form-group">
             <label htmlFor="endDate">End Date</label>
@@ -155,7 +155,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({ formHeading, initialData }) => 
               id="endDate"
               {...register("expiryDate")}
             />
-            {/* {errors.expiryDate && <p className="text-red-500 text-sm">{errors.expiryDate.message}</p>} */}
+            {errors.expiryDate && <p className="text-red-500 text-sm">{errors.expiryDate.message}</p>}
           </div>
           <div className="form-group md:col-span-2">
             <label htmlFor="status">Status</label>
@@ -163,7 +163,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({ formHeading, initialData }) => 
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
-            {/* {errors.status && <p className="text-red-500 text-sm">{errors.status.message}</p>} */}
+            {errors.status && <p className="text-red-500 text-sm">{errors.status.message}</p>}
           </div>
           <div className="form-group col-span-2">
             <label htmlFor="">Thumbnail</label>
