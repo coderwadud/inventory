@@ -25,7 +25,7 @@ const Counter: React.FC = () => {
 			setData([
 				{
 					id: 1,
-					title: "Active Raffles",
+					title: "Live Games",
 					icon: "/images/icon/1.svg",
 					count: active.toString(),
 				},
