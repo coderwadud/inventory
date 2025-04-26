@@ -60,17 +60,13 @@ const Nav: React.FC<NavProps> = () => {
 				<input className="p-2 bg-white border border-[#D0D5DD] pl-9 outline-0 w-full" type="text" placeholder="Search..." />
 			</form>
 			<div className="flex items-center gap-4">
-				<Link href="/" className="w-10 h-10 block">
-					<Image
+				{/* <Link href="/profile" className="w-10 h-10 block">
+					<img className="h-10 w-10"
 					src="/images/icon/bell.svg"
 					alt="logo"
-					width={40}
-					height={40}
-					sizes="100vw"
-					quality={100}
 					/>
-				</Link>
-				<Link href="/" className="w-10 h-10 overflow-hidden rounded-full block">
+				</Link> */}
+				<Link href="/profile" className="w-10 h-10 overflow-hidden rounded-full block">
 					<img
 						src={profilePicture}
 						alt="logo"

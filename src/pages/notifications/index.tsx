@@ -1,11 +1,12 @@
 import ChsHead from "@/components/layouts/ChsHead";
+import Settings from "@/components/notifications";
 import PrivateRoute from "@/routes/PrivetRoute";
 
 const NotificationsPage = () => {
 	return (
 		<PrivateRoute>
 			<ChsHead />
-			<h1>notifications</h1>
+			<Settings />
 		</PrivateRoute>
 	);
 };

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import LogoutButton from "../common/logout-button";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface SidebarProps {}
+interface SidebarProps { }
 
 const Sidebar: React.FC<SidebarProps> = () => {
   const router = useRouter();
@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = () => {
         })}
       </ul>
 
-				<LogoutButton />
+      <LogoutButton />
     </div>
   );
 };
@@ -90,30 +90,30 @@ const SidebarData: Array<SidebarData> = [
     id: 2,
     title: "Inventory Database",
     url: "/inventory-database",
-    icon: "/images/icon/01.svg",
+    icon: "/images/icon/02.svg",
   },
   {
     id: 3,
-    title: "Raffle Creation",
+    title: "Game Creation",
     url: "/raffle-creation",
-    icon: "/images/icon/01.svg",
+    icon: "/images/icon/03.svg",
   },
   {
     id: 4,
     title: "User Management",
     url: "/user-management",
-    icon: "/images/icon/01.svg",
+    icon: "/images/icon/04.svg",
   },
   {
     id: 5,
     title: "Image Library",
     url: "/image-library",
-    icon: "/images/icon/01.svg",
+    icon: "/images/icon/05.svg",
   },
   {
     id: 6,
     title: "Notifications",
     url: "/notifications",
-    icon: "/images/icon/01.svg",
+    icon: "/images/icon/06.svg",
   },
 ];
