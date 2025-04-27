@@ -4,7 +4,7 @@ import Pagination from '../../common/pagination';
 import Image from 'next/image';
 import Link from 'next/link';
 import Dropdown from '../../common/dropdown';
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 import ConfirmationModal from '../../common/modal';
 
 interface InventoryTableProps {
@@ -54,7 +54,7 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
   const handleEdit = (id: string) => { // Changed to string
     router.push(`/inventory-database/${id}`);
   };
-  
+
   // Handle Delete
   const handleDelete = (id: string) => { // Changed to string
     setSelectedItemId(id); // Store the selected item id
@@ -143,7 +143,7 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
                 <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Partner</th>
                 <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Stock Level</th>
                 <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Status</th>
-                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6">Action</th>
+                <th className="text-[12px] font-medium text-gray border-0 py-3 px-6 text-center">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -158,7 +158,7 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
                       />
                       <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
                         <Image
-                          src={item.thumbnail || '/images/laptop.webp'} 
+                          src={item.thumbnail || '/images/laptop.webp'}
                           loading="lazy"
                           height={40}
                           width={40}
@@ -186,22 +186,21 @@ const InventoryTable: React.FC<InventoryTablePropsWithHeading> = ({ heading, ite
                   </td>
                   <td className="text-sm text-gray py-3 px-6">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                        item.status === 'Active' ? 'border-[#D0D5DD] text-[#067647]' : 'border-primary text-primary'
-                      }`}
+                      className={`px-3 py-1 rounded-full text-xs font-medium border ${item.status === 'Active' ? 'border-[#D0D5DD] text-[#067647]' : 'border-primary text-primary'
+                        }`}
                     >
                       {item.status}
                     </span>
                   </td>
-                  <td className="text-sm text-gray py-3 px-6">
+                  <td className="text-sm text-gray py-3 px-6 text-center">
                     <Dropdown
                       id={Number(item.id)}
                       isOpen={openDropdown === `${item.id}`}
                       toggleDropdown={() => handleDropdownToggle(`${item.id}`)}
                       options={[
-                        { id: 1, name: 'View', action: () => handleView(item.id) },
-                        { id: 2, name: 'Edit', action: () => handleEdit(item.id) },
-                        { id: 3, name: 'Delete', action: () => handleDelete(item.id) },
+                        { id: 1, name: '/images/icon/eye1.svg', action: () => handleView(item.id) },
+                        { id: 2, name: '/images/icon/edit1.svg', action: () => handleEdit(item.id) },
+                        { id: 3, name: '/images/icon/delete1.svg', action: () => handleDelete(item.id) },
                       ]}
                     />
                   </td>
