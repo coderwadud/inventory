@@ -4,7 +4,7 @@ import Pagination from '../../common/pagination';
 import Image from 'next/image';
 import Link from 'next/link';
 import Dropdown from '../../common/dropdown';
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 import ConfirmationModal from '../../common/modal';
 import { Timestamp } from 'firebase/firestore';
 
@@ -55,7 +55,7 @@ const RaffleTable: React.FC<RaffleTablePropsWithHeading> = ({ heading, items, on
   const handleEdit = (id: number) => {
     router.push(`/raffle-creation/${id}`);
   };
-  
+
   // Handle Delete
   const handleDelete = (id: number) => {
     setSelectedItemId(id); // Store the selected item id
@@ -106,23 +106,23 @@ const RaffleTable: React.FC<RaffleTablePropsWithHeading> = ({ heading, items, on
   };
 
 
-   
-const formatDate = (date: Timestamp | Date | string) => {
-  const jsDate = date instanceof Timestamp ? date.toDate() : new Date(date);
-  const options: Intl.DateTimeFormatOptions = {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
+
+  const formatDate = (date: Timestamp | Date | string) => {
+    const jsDate = date instanceof Timestamp ? date.toDate() : new Date(date);
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    };
+    return jsDate.toLocaleDateString("en-GB", options); // e.g., "15 Apr 2025"
   };
-  return jsDate.toLocaleDateString("en-GB", options); // e.g., "15 Apr 2025"
-};
   const limitWords = (text: string, wordLimit = 3): string => {
-        const words = text.trim().split(/\s+/);
-        if (words.length <= wordLimit) return text;
-        return words.slice(0, wordLimit).join(" ") + "...";
-        };
+    const words = text.trim().split(/\s+/);
+    if (words.length <= wordLimit) return text;
+    return words.slice(0, wordLimit).join(" ") + "...";
+  };
   console.log(raffleDataList);
-  
+
   return (
     <>
       <div className="border border-[#D0D5DD] rounded-xl py-6 bg-white w-full">
@@ -176,7 +176,7 @@ const formatDate = (date: Timestamp | Date | string) => {
                       />
                       <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
                         <Image
-                          src={item.picture || '/images/laptop.webp'} 
+                          src={item.picture || '/images/laptop.webp'}
                           loading="lazy"
                           height={40}
                           width={40}
@@ -192,7 +192,7 @@ const formatDate = (date: Timestamp | Date | string) => {
                     <div className="flex items-center gap-3">
                       <span className="h-10 w-10 min-w-10 bg-white rounded-full border border-[#D0D5DD] overflow-hidden">
                         <Image
-                          src={item.editedGamePicture || '/images/laptop.webp'} 
+                          src={item.editedGamePicture || '/images/laptop.webp'}
                           loading="lazy"
                           height={40}
                           width={40}
@@ -208,14 +208,13 @@ const formatDate = (date: Timestamp | Date | string) => {
                   <td className="text-sm text-gray py-3 px-6">{formatDate(item.expiryDate)}</td>
                   <td className="text-sm text-gray py-3 px-6">
                     <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                      (item.status || "Active") === "Active"
-                        ? "border-[#D0D5DD] text-[#067647]"
-                        : "border-primary text-primary"
-                    }`}
-                  >
-                    {item.status || "Active"}
-                  </span>
+                      className={`px-3 py-1 rounded-full text-xs font-medium border ${(item.status || "Active") === "Active"
+                          ? "border-[#D0D5DD] text-[#067647]"
+                          : "border-primary text-primary"
+                        }`}
+                    >
+                      {item.status || "Active"}
+                    </span>
 
                   </td>
                   <td className="text-sm text-gray py-3 px-6">
@@ -224,9 +223,9 @@ const formatDate = (date: Timestamp | Date | string) => {
                       isOpen={openDropdown === `${item.id}`}
                       toggleDropdown={() => handleDropdownToggle(`${item.id}`)}
                       options={[
-                        { id: 1, name: 'View', action: () => handleView(item.id) },
-                        { id: 2, name: 'Edit', action: () => handleEdit(item.id) },
-                        { id: 3, name: 'Delete', action: () => handleDelete(item.id) },
+                        { id: 1, name: '/images/icon/eye1.svg', action: () => handleView(item.id) },
+                        { id: 2, name: '/images/icon/edit1.svg', action: () => handleEdit(item.id) },
+                        { id: 3, name: '/images/icon/delete1.svg', action: () => handleDelete(item.id) },
                       ]}
                     />
                   </td>
